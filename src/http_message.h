@@ -10,8 +10,7 @@
 
 #include "uri.h"
 
-namespace simple_http_server
-{
+namespace simple_http_server {
 // HTTP methods defined in the following document:
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 enum class HttpMethod { GET, HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH };
@@ -62,58 +61,46 @@ HttpVersion string_to_version(const std::string &version_string);
 // Defines the common interface of an HTTP request and HTTP response.
 // Each message will have an HTTP version, collection of header fields,
 // and message content. The collection of headers and content can be empty.
-class HttpMessageInterface
-{
+class HttpMessageInterface {
 public:
     HttpMessageInterface()
-        : version_(HttpVersion::HTTP_1_1)
-    {
+        : version_(HttpVersion::HTTP_1_1) {
     }
     virtual ~HttpMessageInterface() = default;
 
-    void SetHeader(const std::string &key, const std::string &value)
-    {
+    void SetHeader(const std::string &key, const std::string &value) {
         headers_[key] = std::move(value);
     }
-    void RemoveHeader(const std::string &key)
-    {
+    void RemoveHeader(const std::string &key) {
         headers_.erase(key);
     }
-    void ClearHeader()
-    {
+    void ClearHeader() {
         headers_.clear();
     }
-    void SetContent(const std::string &content)
-    {
+    void SetContent(const std::string &content) {
         content_ = std::move(content);
         SetContentLength();
     }
-    void ClearContent(const std::string &content)
-    {
+    void ClearContent(const std::string &content) {
         content_.clear();
         SetContentLength();
     }
 
-    HttpVersion version() const
-    {
+    HttpVersion version() const {
         return version_;
     }
-    std::string header(const std::string &key) const
-    {
+    std::string header(const std::string &key) const {
         if (headers_.count(key) > 0)
             return headers_.at(key);
         return std::string();
     }
-    std::map<std::string, std::string> headers() const
-    {
+    std::map<std::string, std::string> headers() const {
         return headers_;
     }
-    std::string content() const
-    {
+    std::string content() const {
         return content_;
     }
-    size_t content_length() const
-    {
+    size_t content_length() const {
         return content_.length();
     }
 
@@ -122,8 +109,7 @@ protected:
     std::map<std::string, std::string> headers_;
     std::string content_;
 
-    void SetContentLength()
-    {
+    void SetContentLength() {
         SetHeader("Content-Length", std::to_string(content_.length()));
     }
 };
@@ -131,30 +117,24 @@ protected:
 // An HttpRequest object represents a single HTTP request
 // It has a HTTP method and URI so that the server can identify
 // the corresponding resource and action
-class HttpRequest : public HttpMessageInterface
-{
+class HttpRequest : public HttpMessageInterface {
 public:
     HttpRequest()
-        : method_(HttpMethod::GET)
-    {
+        : method_(HttpMethod::GET) {
     }
     ~HttpRequest() = default;
 
-    void SetMethod(HttpMethod method)
-    {
+    void SetMethod(HttpMethod method) {
         method_ = method;
     }
-    void SetUri(const Uri &uri)
-    {
+    void SetUri(const Uri &uri) {
         uri_ = std::move(uri);
     }
 
-    HttpMethod method() const
-    {
+    HttpMethod method() const {
         return method_;
     }
-    Uri uri() const
-    {
+    Uri uri() const {
         return uri_;
     }
 
@@ -169,26 +149,21 @@ private:
 // An HTTPResponse object represents a single HTTP response
 // The HTTP server sends an HTTP response to a client that include
 // an HTTP status code, headers, and (optional) content
-class HttpResponse : public HttpMessageInterface
-{
+class HttpResponse : public HttpMessageInterface {
 public:
     HttpResponse()
-        : status_code_(HttpStatusCode::Ok)
-    {
+        : status_code_(HttpStatusCode::Ok) {
     }
     HttpResponse(HttpStatusCode status_code)
-        : status_code_(status_code)
-    {
+        : status_code_(status_code) {
     }
     ~HttpResponse() = default;
 
-    void SetStatusCode(HttpStatusCode status_code)
-    {
+    void SetStatusCode(HttpStatusCode status_code) {
         status_code_ = status_code;
     }
 
-    HttpStatusCode status_code() const
-    {
+    HttpStatusCode status_code() const {
         return status_code_;
     }
 

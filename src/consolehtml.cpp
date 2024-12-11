@@ -3,26 +3,24 @@
 
 #include "consolehtml.h"
 
-#include <QApplication>
-#include <QClipboard>
-#include <QContextMenuEvent>
-#include <QTemporaryFile>
-#include <QUrlQuery>
+#include <analitza/expression.h>
+#include <analitza/variables.h>
+#include <kio/copyjob.h>
+#include <kio/job.h>
 
 #include <KLocalizedString>
 #include <KStandardAction>
 #include <QAction>
+#include <QApplication>
+#include <QClipboard>
+#include <QContextMenuEvent>
 #include <QMenu>
-#include <kio/copyjob.h>
-#include <kio/job.h>
-
-#include <analitza/expression.h>
-#include <analitza/variables.h>
+#include <QTemporaryFile>
+#include <QUrlQuery>
 
 using namespace Qt::Literals::StringLiterals;
 
-static QUrl temporaryPath()
-{
+static QUrl temporaryPath() {
     QTemporaryFile temp(QStringLiteral("consolelog"));
     temp.open();
     temp.close();
@@ -30,8 +28,7 @@ static QUrl temporaryPath()
     return QUrl::fromLocalFile(temp.fileName());
 }
 
-static QUrl retrieve(const QUrl &remoteUrl)
-{
+static QUrl retrieve(const QUrl &remoteUrl) {
     const QUrl path = temporaryPath();
     KIO::CopyJob *job = KIO::copyAs(remoteUrl, path);
 
@@ -40,17 +37,14 @@ static QUrl retrieve(const QUrl &remoteUrl)
     return path;
 }
 
-class ConsolePage : public QWebEnginePage
-{
+class ConsolePage : public QWebEnginePage {
 public:
     ConsolePage(ConsoleHtml *parent)
         : QWebEnginePage(parent)
-        , m_console(parent)
-    {
+        , m_console(parent) {
     }
 
-    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool /*isMainFrame*/) override
-    {
+    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool /*isMainFrame*/) override {
         m_console->setActualUrl(url);
 
         if (url.scheme() == QLatin1String("data"))
@@ -67,25 +61,21 @@ public:
 ConsoleHtml::ConsoleHtml(QWidget *parent)
     : QWebEngineView(parent)
     , m_actualUrl()
-    , m_model(new ConsoleModel(this))
-{
+    , m_model(new ConsoleModel(this)) {
     connect(m_model.data(), &ConsoleModel::updateView, this, &ConsoleHtml::updateView);
     connect(m_model.data(), &ConsoleModel::operationSuccessful, this, &ConsoleHtml::includeOperation);
     setPage(new ConsolePage(this));
 }
 
-ConsoleHtml::~ConsoleHtml()
-{
+ConsoleHtml::~ConsoleHtml() {
     qDeleteAll(m_options);
 }
 
-void ConsoleHtml::setActualUrl(const QUrl &url)
-{
+void ConsoleHtml::setActualUrl(const QUrl &url) {
     m_actualUrl = url;
 }
 
-void ConsoleHtml::openClickedUrl(const QUrl &url)
-{
+void ConsoleHtml::openClickedUrl(const QUrl &url) {
     QUrlQuery query(url);
     QString id = query.queryItemValue(QStringLiteral("id"));
     QString exp = query.queryItemValue(QStringLiteral("func"));
@@ -100,33 +90,27 @@ void ConsoleHtml::openClickedUrl(const QUrl &url)
         }
 }
 
-bool ConsoleHtml::addOperation(const Analitza::Expression &e, const QString &input)
-{
+bool ConsoleHtml::addOperation(const Analitza::Expression &e, const QString &input) {
     return m_model->addOperation(e, input);
 }
 
-ConsoleModel::ConsoleMode ConsoleHtml::mode() const
-{
+ConsoleModel::ConsoleMode ConsoleHtml::mode() const {
     return m_model->mode();
 }
 
-void ConsoleHtml::setMode(ConsoleModel::ConsoleMode newMode)
-{
+void ConsoleHtml::setMode(ConsoleModel::ConsoleMode newMode) {
     m_model->setMode(newMode);
 }
 
-Analitza::Analyzer *ConsoleHtml::analitza()
-{
+Analitza::Analyzer *ConsoleHtml::analitza() {
     return m_model->analyzer();
 }
 
-bool ConsoleHtml::loadScript(const QUrl &path)
-{
+bool ConsoleHtml::loadScript(const QUrl &path) {
     return m_model->loadScript(path.isLocalFile() ? path : retrieve(path));
 }
 
-bool ConsoleHtml::saveScript(const QUrl &path) const
-{
+bool ConsoleHtml::saveScript(const QUrl &path) const {
     const QUrl savePath = path.isLocalFile() ? path : temporaryPath();
     bool correct = m_model->saveScript(savePath);
     if (!path.isLocalFile()) {
@@ -136,8 +120,7 @@ bool ConsoleHtml::saveScript(const QUrl &path) const
     return correct;
 }
 
-bool ConsoleHtml::saveLog(const QUrl &path) const
-{
+bool ConsoleHtml::saveLog(const QUrl &path) const {
     const QUrl savePath = path.isLocalFile() ? path : temporaryPath();
     bool correct = m_model->saveLog(savePath);
     if (!path.isLocalFile()) {
@@ -147,8 +130,7 @@ bool ConsoleHtml::saveLog(const QUrl &path) const
     return correct;
 }
 
-void ConsoleHtml::includeOperation(const Analitza::Expression & /*e*/, const Analitza::Expression &res)
-{
+void ConsoleHtml::includeOperation(const Analitza::Expression & /*e*/, const Analitza::Expression &res) {
     m_optionsString.clear();
     if (res.isCorrect()) {
         Analitza::Analyzer lambdifier(m_model->variables());
@@ -174,8 +156,7 @@ void ConsoleHtml::includeOperation(const Analitza::Expression & /*e*/, const Ana
     }
 }
 
-void ConsoleHtml::updateView()
-{
+void ConsoleHtml::updateView() {
     QByteArray code;
     code += "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
     code += "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n<head>\n\t<title> :) </title>\n";
@@ -209,17 +190,17 @@ void ConsoleHtml::updateView()
     });
 }
 
-void ConsoleHtml::copy() const
-{
+void ConsoleHtml::copy() const {
     QApplication::clipboard()->setText(selectedText());
 }
 
-void ConsoleHtml::contextMenuEvent(QContextMenuEvent *ev)
-{
+void ConsoleHtml::contextMenuEvent(QContextMenuEvent *ev) {
     QMenu popup;
     if (hasSelection()) {
         popup.addAction(KStandardAction::copy(this, SLOT(copy()), &popup));
-        QAction *act = new QAction(QIcon::fromTheme(QStringLiteral("edit-paste")), i18n("Paste \"%1\" to input", selectedText().trimmed()), &popup);
+        QAction *act = new QAction(QIcon::fromTheme(QStringLiteral("edit-paste")),
+            i18n("Paste \"%1\" to input", selectedText().trimmed()),
+            &popup);
         connect(act, SIGNAL(triggered()), SLOT(paste()));
         popup.addAction(act);
         popup.addSeparator();
@@ -229,24 +210,20 @@ void ConsoleHtml::contextMenuEvent(QContextMenuEvent *ev)
     popup.exec(mapToGlobal(ev->pos()));
 }
 
-void ConsoleHtml::clear()
-{
+void ConsoleHtml::clear() {
     m_model->clear();
     updateView();
 }
 
-void ConsoleHtml::modifyVariable(const QString &name, const Analitza::Expression &exp)
-{
+void ConsoleHtml::modifyVariable(const QString &name, const Analitza::Expression &exp) {
     m_model->variables()->modify(name, exp);
 }
 
-void ConsoleHtml::removeVariable(const QString &name)
-{
+void ConsoleHtml::removeVariable(const QString &name) {
     m_model->variables()->remove(name);
 }
 
-void ConsoleHtml::paste()
-{
+void ConsoleHtml::paste() {
     Q_EMIT paste(selectedText().trimmed());
 }
 

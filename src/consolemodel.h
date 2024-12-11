@@ -19,13 +19,13 @@
 #ifndef CONSOLEMODEL_H
 #define CONSOLEMODEL_H
 
-#include <QObject>
 #include <analitza/analyzer.h>
 #include <analitza/expression.h>
 #include <analitza/variables.h>
 
-class ConsoleModel : public QObject
-{
+#include <QObject>
+
+class ConsoleModel : public QObject {
     Q_OBJECT
     Q_PROPERTY(ConsoleMode mode READ mode WRITE setMode NOTIFY modeChanged)
     Q_PROPERTY(QSharedPointer<Analitza::Variables> variables READ variables WRITE setVariables NOTIFY variablesChanged)
@@ -51,24 +51,20 @@ public:
 
     QByteArray css() const;
 
-    ConsoleMode mode() const
-    {
+    ConsoleMode mode() const {
         return m_mode;
     }
     void setMode(ConsoleMode mode);
 
-    QSharedPointer<Analitza::Variables> variables() const
-    {
+    QSharedPointer<Analitza::Variables> variables() const {
         return a.variables();
     }
     void setVariables(const QSharedPointer<Analitza::Variables> &vars);
-    Analitza::Analyzer *analyzer()
-    {
+    Analitza::Analyzer *analyzer() {
         return &a;
     }
 
-    QList<QByteArray> htmlLog() const
-    {
+    QList<QByteArray> htmlLog() const {
         return m_htmlLog;
     }
 

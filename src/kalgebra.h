@@ -26,26 +26,23 @@
 #include <QTabWidget>
 #include <QTreeView>
 
-namespace Analitza
-{
+namespace Analitza {
 class PlotsView2D;
 class PlotsView3DES;
 class PlotsModel;
 class VariablesModel;
 class ExpressionEdit;
-}
+} // namespace Analitza
 
 class ConsoleHtml;
 class FunctionEdit;
 class KRecentFilesAction;
 
-namespace Analitza
-{
+namespace Analitza {
 class Expression;
 }
 
-class KAlgebra : public QMainWindow
-{
+class KAlgebra : public QMainWindow {
     Q_OBJECT
 public:
     KAlgebra(QWidget *parent = nullptr);

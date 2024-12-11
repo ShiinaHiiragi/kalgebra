@@ -19,31 +19,28 @@
 #ifndef FUNCTIONEDIT_H
 #define FUNCTIONEDIT_H
 
+#include <KColorCombo>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QWidget>
 
-#include <KColorCombo>
-
 class QTabWidget;
-namespace Analitza
-{
+namespace Analitza {
 class Variables;
 class Expression;
 class PlotsView2D;
 class PlotsModel;
 class PlaneCurve;
 class ExpressionEdit;
-}
+} // namespace Analitza
 
 /**
  *    The FunctionEdit dialog provides a way to specify functions.
  *    @author Aleix Pol i Gonzalez
  */
 
-class FunctionEdit : public QWidget
-{
+class FunctionEdit : public QWidget {
     Q_OBJECT
 public:
     /** Constructor. */
@@ -61,8 +58,7 @@ public:
     void setFunction(const QString &newText);
 
     /** Retrieves the selected color for the function */
-    QColor color() const
-    {
+    QColor color() const {
         return m_color->color();
     }
 
@@ -70,8 +66,7 @@ public:
     void setColor(const QColor &newColor);
 
     /** Returns whether we are editing or adding a function. */
-    bool editing() const
-    {
+    bool editing() const {
         return m_modmode;
     }
 
@@ -79,25 +74,21 @@ public:
     void setEditing(bool m);
 
     /** Sets a name to the function. (Not used YET) */
-    void setName(const QString &name)
-    {
+    void setName(const QString &name) {
         m_name->setText(name);
     }
 
     /** Retrieves a name for the function. (Not used YET) */
-    QString name() const
-    {
+    QString name() const {
         return m_name->text();
     }
 
     /** Sets the variables class to be used with the graph functions*/
-    void setVariables(const QSharedPointer<Analitza::Variables> &v)
-    {
+    void setVariables(const QSharedPointer<Analitza::Variables> &v) {
         m_vars = v;
     }
 
-    QSharedPointer<Analitza::Variables> variables() const
-    {
+    QSharedPointer<Analitza::Variables> variables() const {
         return m_vars;
     }
 

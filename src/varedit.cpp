@@ -17,21 +17,21 @@
  *************************************************************************************/
 
 #include "varedit.h"
+
 #include <analitza/analyzer.h>
 #include <analitza/expression.h>
 #include <analitza/variables.h>
 #include <analitzagui/expressionedit.h>
+#include <klocalizedstring.h>
 
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <klocalizedstring.h>
 
 VarEdit::VarEdit(QWidget *parent, bool modal)
     : QDialog(parent)
     , vars(nullptr)
-    , m_correct(false)
-{
+    , m_correct(false) {
     setWindowTitle(i18n("Add/Edit a variable"));
     setModal(modal);
 
@@ -59,8 +59,7 @@ VarEdit::VarEdit(QWidget *parent, bool modal)
     m_exp->setFocus();
 }
 
-void VarEdit::setName(const QString &newVar)
-{
+void VarEdit::setName(const QString &newVar) {
     m_var = newVar;
     setWindowTitle(i18n("Edit '%1' value", newVar));
     if (!vars)
@@ -71,8 +70,7 @@ void VarEdit::setName(const QString &newVar)
     m_removeBtn->setEnabled(vars && canRemove(newVar));
 }
 
-bool VarEdit::canRemove(const QString &name) const
-{
+bool VarEdit::canRemove(const QString &name) const {
     QHash<QString, Analitza::Object *>::const_iterator it = vars->constBegin(), itEnd = vars->constEnd();
     for (; it != itEnd; ++it) {
         QStringList deps = AnalitzaUtils::dependencies(*it, QStringList());
@@ -83,8 +81,7 @@ bool VarEdit::canRemove(const QString &name) const
     return true;
 }
 
-Analitza::Expression VarEdit::val()
-{
+Analitza::Expression VarEdit::val() {
     Analitza::Expression val;
     Analitza::Analyzer a(vars);
 
@@ -109,25 +106,21 @@ Analitza::Expression VarEdit::val()
     return val;
 }
 
-void VarEdit::edit()
-{
+void VarEdit::edit() {
     val();
 }
 
-void VarEdit::ok()
-{
+void VarEdit::ok() {
     if (m_correct)
         accept();
 }
 
-void VarEdit::setAnalitza(Analitza::Analyzer *na)
-{
+void VarEdit::setAnalitza(Analitza::Analyzer *na) {
     vars = na->variables();
     m_exp->setAnalitza(na);
 }
 
-void VarEdit::removeVariable()
-{
+void VarEdit::removeVariable() {
     vars->remove(m_var);
     close();
 }

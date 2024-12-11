@@ -17,20 +17,13 @@
  *************************************************************************************/
 
 #include "kalgebra.h"
-#include "askname.h"
-#include "consolehtml.h"
-#include "dictionary.h"
-#include "functionedit.h"
-#include "varedit.h"
-#include "variablesdelegate.h"
-#include "viewportwidget.h"
-#include <analitzagui/plotsview3d_es.h>
 
 #include <analitza/value.h>
 #include <analitza/variables.h>
 #include <analitzagui/expressionedit.h>
 #include <analitzagui/operatorsmodel.h>
 #include <analitzagui/plotsview2d.h>
+#include <analitzagui/plotsview3d_es.h>
 #include <analitzagui/variablesmodel.h>
 #include <analitzaplot/functiongraph.h>
 #include <analitzaplot/planecurve.h>
@@ -61,32 +54,34 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
+#include "askname.h"
+#include "consolehtml.h"
+#include "dictionary.h"
+#include "functionedit.h"
+#include "varedit.h"
+#include "variablesdelegate.h"
+#include "viewportwidget.h"
+
 using namespace Qt::Literals::StringLiterals;
 
-class Add2DOption : public InlineOptions
-{
+class Add2DOption : public InlineOptions {
 public:
     Add2DOption(KAlgebra *c)
-        : m_kalgebra(c)
-    {
+        : m_kalgebra(c) {
     }
 
-    QString id() const override
-    {
+    QString id() const override {
         return QStringLiteral("add2d");
     }
-    bool matchesExpression(const Analitza::Expression &exp) const override
-    {
+    bool matchesExpression(const Analitza::Expression &exp) const override {
         return Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim2D).canDraw();
     }
 
-    QString caption() const override
-    {
+    QString caption() const override {
         return i18n("Plot 2D");
     }
 
-    void triggerOption(const Analitza::Expression &exp) override
-    {
+    void triggerOption(const Analitza::Expression &exp) override {
         m_kalgebra->add2D(exp);
     }
 
@@ -94,30 +89,24 @@ private:
     KAlgebra *m_kalgebra;
 };
 
-class Add3DOption : public InlineOptions
-{
+class Add3DOption : public InlineOptions {
 public:
     Add3DOption(KAlgebra *c)
-        : m_kalgebra(c)
-    {
+        : m_kalgebra(c) {
     }
 
-    QString id() const override
-    {
+    QString id() const override {
         return QStringLiteral("add3d");
     }
-    bool matchesExpression(const Analitza::Expression &exp) const override
-    {
+    bool matchesExpression(const Analitza::Expression &exp) const override {
         return Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim3D).canDraw();
     }
 
-    QString caption() const override
-    {
+    QString caption() const override {
         return i18n("Plot 3D");
     }
 
-    void triggerOption(const Analitza::Expression &exp) override
-    {
+    void triggerOption(const Analitza::Expression &exp) override {
         m_kalgebra->add3D(exp);
     }
 
@@ -125,14 +114,12 @@ private:
     KAlgebra *m_kalgebra;
 };
 
-QColor randomFunctionColor()
-{
+QColor randomFunctionColor() {
     return QColor::fromHsv(QRandomGenerator::global()->bounded(255), 255, 255);
 }
 
 KAlgebra::KAlgebra(QWidget *parent)
-    : QMainWindow(parent)
-{
+    : QMainWindow(parent) {
     resize(900, 500);
 
     m_tabs = new QTabWidget;
@@ -178,7 +165,9 @@ KAlgebra::KAlgebra(QWidget *parent)
 
     c_exp = new Analitza::ExpressionEdit(console);
     c_exp->setAnalitza(c_results->analitza());
-    c_exp->setExamples(QStringList() << QStringLiteral("square:=x->x**2") << QStringLiteral("fib:=n->piecewise { eq(n,0)?0, eq(n,1)?1, ?fib(n-1)+fib(n-2) }"));
+    c_exp->setExamples(
+        QStringList() << QStringLiteral("square:=x->x**2")
+                      << QStringLiteral("fib:=n->piecewise { eq(n,0)?0, eq(n,1)?1, ?fib(n-1)+fib(n-2) }"));
     c_dock_vars->setWidget(c_variables);
 
     m_tabs->addTab(console, i18n("&Calculator"));
@@ -195,20 +184,25 @@ KAlgebra::KAlgebra(QWidget *parent)
     ////////menu
     c_menu = menuBar()->addMenu(i18n("C&alculator"));
     c_menu->addAction(QIcon::fromTheme(QStringLiteral("document-open")),
-                      i18nc("@item:inmenu", "&Load Script..."),
-                      Qt::CTRL | Qt::Key_L,
-                      this,
-                      SLOT(loadScript()));
-    c_recentScripts = new KRecentFilesAction(QIcon::fromTheme(QStringLiteral("document-open-recent")), i18n("Recent Scripts"), this);
+        i18nc("@item:inmenu", "&Load Script..."),
+        Qt::CTRL | Qt::Key_L,
+        this,
+        SLOT(loadScript()));
+    c_recentScripts =
+        new KRecentFilesAction(QIcon::fromTheme(QStringLiteral("document-open-recent")), i18n("Recent Scripts"), this);
     connect(c_recentScripts, SIGNAL(urlSelected(QUrl)), this, SLOT(loadScript(QUrl)));
     c_menu->addAction(c_recentScripts);
 
     c_menu->addAction(QIcon::fromTheme(QStringLiteral("document-save")),
-                      i18nc("@item:inmenu", "&Save Script..."),
-                      Qt::CTRL | Qt::Key_G,
-                      this,
-                      &KAlgebra::saveScript);
-    c_menu->addAction(QIcon::fromTheme(QStringLiteral("document-save")), i18nc("@item:inmenu", "&Export Log..."), QKeySequence::Save, this, &KAlgebra::saveLog);
+        i18nc("@item:inmenu", "&Save Script..."),
+        Qt::CTRL | Qt::Key_G,
+        this,
+        &KAlgebra::saveScript);
+    c_menu->addAction(QIcon::fromTheme(QStringLiteral("document-save")),
+        i18nc("@item:inmenu", "&Export Log..."),
+        QKeySequence::Save,
+        this,
+        &KAlgebra::saveLog);
     c_menu->addSeparator();
     c_menu->addAction(i18nc("@item:inmenu", "&Insert ans..."), Qt::Key_F3, this, &KAlgebra::insertAns);
     c_menu->addSeparator()->setText(i18n("Execution Mode"));
@@ -404,8 +398,7 @@ KAlgebra::KAlgebra(QWidget *parent)
     tabChanged(0);
 }
 
-KAlgebra::~KAlgebra()
-{
+KAlgebra::~KAlgebra() {
     KConfig conf(QStringLiteral("kalgebrarc"));
     KConfigGroup config(&conf, QStringLiteral("Default"));
     QStringList urls;
@@ -416,8 +409,7 @@ KAlgebra::~KAlgebra()
     config.writeEntry("recent", urls);
 }
 
-void KAlgebra::initializeRecentScripts()
-{
+void KAlgebra::initializeRecentScripts() {
     KConfig conf(QStringLiteral("kalgebrarc"));
     KConfigGroup config(&conf, QStringLiteral("Default"));
 
@@ -427,24 +419,22 @@ void KAlgebra::initializeRecentScripts()
     }
 }
 
-void KAlgebra::newInstance()
-{
+void KAlgebra::newInstance() {
     QProcess::startDetached(QApplication::applicationFilePath(), QStringList());
 }
 
-void KAlgebra::add2D(const Analitza::Expression &exp)
-{
+void KAlgebra::add2D(const Analitza::Expression &exp) {
     qDebug() << "adding" << exp.toString();
 
-    Analitza::PlotBuilder req = Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim2D, c_results->analitza()->variables());
+    Analitza::PlotBuilder req =
+        Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim2D, c_results->analitza()->variables());
     Analitza::PlotItem *curve = req.create(randomFunctionColor(), b_funcsModel->freeId());
     b_funcsModel->addPlot(curve);
 
     m_tabs->setCurrentIndex(1);
 }
 
-void KAlgebra::new_func()
-{
+void KAlgebra::new_func() {
     Analitza::FunctionGraph *f = b_funced->createFunction();
     qDebug() << f->expression().toString();
     qDebug() << f->color();
@@ -463,8 +453,7 @@ void KAlgebra::new_func()
     m_graph2d->setFocus();
 }
 
-void KAlgebra::remove_func()
-{
+void KAlgebra::remove_func() {
     Q_ASSERT(b_funced->editing());
     b_funcsModel->removeRow(b_funcs->currentIndex().row());
 
@@ -475,8 +464,7 @@ void KAlgebra::remove_func()
     m_graph2d->setFocus();
 }
 
-void KAlgebra::edit_func(const QModelIndex &idx)
-{
+void KAlgebra::edit_func(const QModelIndex &idx) {
     b_tools->setTabText(1, i18n("&Editing"));
     b_tools->setCurrentIndex(1);
     b_funced->setName(b_funcsModel->data(idx.sibling(idx.row(), 0)).toString());
@@ -485,8 +473,7 @@ void KAlgebra::edit_func(const QModelIndex &idx)
     b_funced->setFocus();
 }
 
-void KAlgebra::functools(int i)
-{
+void KAlgebra::functools(int i) {
     if (i == 0)
         b_tools->setTabText(1, i18n("&Add"));
     else {
@@ -497,8 +484,7 @@ void KAlgebra::functools(int i)
     }
 }
 
-void KAlgebra::edit_var(const QModelIndex &idx)
-{
+void KAlgebra::edit_var(const QModelIndex &idx) {
     if (idx.column() == 0) {
         c_exp->insertText(idx.data().toString());
     } else {
@@ -518,38 +504,33 @@ void KAlgebra::edit_var(const QModelIndex &idx)
     }
 }
 
-void KAlgebra::operate()
-{
+void KAlgebra::operate() {
     if (!c_exp->text().isEmpty()) {
         c_exp->setCorrect(c_results->addOperation(c_exp->expression(), c_exp->toPlainText()));
         c_exp->selectAll();
     }
 }
 
-void KAlgebra::changeStatusBar(const QString &msg)
-{
+void KAlgebra::changeStatusBar(const QString &msg) {
     //     statusBar()->showMessage(msg);
     m_status->setText(msg);
 }
 
-void KAlgebra::loadScript()
-{
+void KAlgebra::loadScript() {
     QUrl path = QFileDialog::getOpenFileUrl(this, i18n("Choose a script"), QUrl(), i18n("Script (*.kal)"));
 
     if (!path.isEmpty())
         loadScript(path);
 }
 
-void KAlgebra::loadScript(const QUrl &path)
-{
+void KAlgebra::loadScript(const QUrl &path) {
     bool loaded = c_results->loadScript(path);
 
     if (loaded)
         c_recentScripts->addUrl(path);
 }
 
-void KAlgebra::saveScript()
-{
+void KAlgebra::saveScript() {
     QUrl path = QFileDialog::getSaveFileUrl(this, QString(), QUrl(), i18n("Script (*.kal)"));
     bool loaded = false;
     if (!path.isEmpty())
@@ -559,39 +540,33 @@ void KAlgebra::saveScript()
         c_recentScripts->addUrl(path);
 }
 
-void KAlgebra::saveLog()
-{
+void KAlgebra::saveLog() {
     QUrl path = QFileDialog::getSaveFileUrl(this, QString(), QUrl(), i18n("HTML File (*.html)"));
     if (!path.isEmpty())
         c_results->saveLog(path);
 }
 
-void KAlgebra::insertAns()
-{
+void KAlgebra::insertAns() {
     c_exp->insertText(QStringLiteral("ans"));
 }
 
-void KAlgebra::set_res_low()
-{
+void KAlgebra::set_res_low() {
     b_funcsModel->setResolution(416);
 }
-void KAlgebra::set_res_std()
-{
+void KAlgebra::set_res_std() {
     b_funcsModel->setResolution(832);
 }
-void KAlgebra::set_res_fine()
-{
+void KAlgebra::set_res_fine() {
     b_funcsModel->setResolution(1664);
 }
-void KAlgebra::set_res_vfine()
-{
+void KAlgebra::set_res_vfine() {
     b_funcsModel->setResolution(3328);
 }
 
-void KAlgebra::new_func3d()
-{
+void KAlgebra::new_func3d() {
     Analitza::Expression exp = t_exp->expression();
-    Analitza::PlotBuilder plot = Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim3D, c_results->analitza()->variables());
+    Analitza::PlotBuilder plot =
+        Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim3D, c_results->analitza()->variables());
     qDebug() << plot.create(Qt::yellow, QStringLiteral("func3d"))->expression().toString();
     if (plot.canDraw()) {
         t_model3d->clear();
@@ -600,57 +575,54 @@ void KAlgebra::new_func3d()
         changeStatusBar(i18n("Errors: %1", plot.errors().join(i18n(", "))));
 }
 
-void KAlgebra::set_dots()
-{
+void KAlgebra::set_dots() {
     m_graph3d->setPlotStyle(Analitza::Dots);
 }
 
-void KAlgebra::set_lines()
-{
+void KAlgebra::set_lines() {
     m_graph3d->setPlotStyle(Analitza::Wired);
 }
 
-void KAlgebra::set_solid()
-{
+void KAlgebra::set_solid() {
     m_graph3d->setPlotStyle(Analitza::Solid);
 }
 
-void KAlgebra::save3DGraph()
-{
-    QString path = QFileDialog::getSaveFileName(this, QString(), QString(), m_graph3d->filters().join(QStringLiteral(";;")));
+void KAlgebra::save3DGraph() {
+    QString path =
+        QFileDialog::getSaveFileName(this, QString(), QString(), m_graph3d->filters().join(QStringLiteral(";;")));
     if (!path.isEmpty()) {
         m_graph3d->save(QUrl::fromLocalFile(path));
     }
 }
 
-void KAlgebra::toggleSquares()
-{
-    m_graph2d->setTicksShown(m_graph2d->ticksShown() ? (Qt::Horizontal | Qt::Vertical) : ~(Qt::Horizontal | Qt::Vertical));
+void KAlgebra::toggleSquares() {
+    m_graph2d->setTicksShown(
+        m_graph2d->ticksShown() ? (Qt::Horizontal | Qt::Vertical) : ~(Qt::Horizontal | Qt::Vertical));
 }
 
-void KAlgebra::toggleKeepAspect()
-{
+void KAlgebra::toggleKeepAspect() {
     m_graph2d->setKeepAspectRatio(!m_graph2d->keepAspectRatio());
 }
 
-void KAlgebra::saveGraph()
-{
-    QPointer<QFileDialog> dialog =
-        new QFileDialog(this, i18n("Select where to put the rendered plot"), QString(), i18n("Image File (*.png);;SVG File (*.svg)"));
+void KAlgebra::saveGraph() {
+    QPointer<QFileDialog> dialog = new QFileDialog(this,
+        i18n("Select where to put the rendered plot"),
+        QString(),
+        i18n("Image File (*.png);;SVG File (*.svg)"));
     dialog->setOption(QFileDialog::DontConfirmOverwrite, false);
     if (dialog->exec() && !dialog->selectedFiles().isEmpty()) {
         QString filter = dialog->selectedNameFilter();
         QString filename = dialog->selectedFiles().first();
 
-        bool isSvg = filename.endsWith(QLatin1String(".svg")) || (!filename.endsWith(QLatin1String(".png")) && filter.mid(2, 3) == QLatin1String("svg"));
+        bool isSvg = filename.endsWith(QLatin1String(".svg"))
+            || (!filename.endsWith(QLatin1String(".png")) && filter.mid(2, 3) == QLatin1String("svg"));
         Analitza::PlotsView2D::Format f = isSvg ? Analitza::PlotsView2D::SVG : Analitza::PlotsView2D::PNG;
         m_graph2d->toImage(filename, f);
     }
     delete dialog;
 }
 
-void menuEnabledHelper(QMenu *m, bool enabled)
-{
+void menuEnabledHelper(QMenu *m, bool enabled) {
     m->setEnabled(enabled);
     const auto actions = m->actions();
     for (QAction *action : actions) {
@@ -658,8 +630,7 @@ void menuEnabledHelper(QMenu *m, bool enabled)
     }
 }
 
-void KAlgebra::tabChanged(int n)
-{
+void KAlgebra::tabChanged(int n) {
     c_dock_vars->hide();
     b_dock_funcs->hide();
     d_dock->hide();
@@ -703,36 +674,30 @@ void KAlgebra::tabChanged(int n)
     changeStatusBar(i18nc("@info:status", "Ready"));
 }
 
-void KAlgebra::select(const QModelIndex &idx)
-{
+void KAlgebra::select(const QModelIndex &idx) {
     b_funcs->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::ClearAndSelect);
 }
 
-void KAlgebra::updateInformation()
-{
+void KAlgebra::updateInformation() {
     c_varsModel->updateInformation();
     c_variables->header()->resizeSections(QHeaderView::ResizeToContents);
 }
 
-void KAlgebra::consoleCalculate()
-{
+void KAlgebra::consoleCalculate() {
     c_results->setMode(ConsoleModel::Calculation);
 }
 
-void KAlgebra::consoleEvaluate()
-{
+void KAlgebra::consoleEvaluate() {
     c_results->setMode(ConsoleModel::Evaluation);
 }
 
-void KAlgebra::valueChanged()
-{
+void KAlgebra::valueChanged() {
     // FIXME: Should only repaint the affected ones.
     if (b_funcsModel->rowCount() > 0)
         m_graph2d->updateFunctions(QModelIndex(), 0, b_funcsModel->rowCount() - 1);
 }
 
-void KAlgebra::varsContextMenu(const QPoint &p)
-{
+void KAlgebra::varsContextMenu(const QPoint &p) {
     QPointer<QMenu> m = new QMenu;
     m->addAction(i18n("Add variable"));
     QAction *ac = m->exec(b_dock_funcs->widget()->mapToGlobal(p));
@@ -747,23 +712,21 @@ void KAlgebra::varsContextMenu(const QPoint &p)
     delete m;
 }
 
-void KAlgebra::add3D(const Analitza::Expression &exp)
-{
+void KAlgebra::add3D(const Analitza::Expression &exp) {
     t_model3d->clear();
-    Analitza::PlotBuilder plot = Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim3D, c_results->analitza()->variables());
+    Analitza::PlotBuilder plot =
+        Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim3D, c_results->analitza()->variables());
     Q_ASSERT(plot.canDraw());
     t_model3d->addPlot(plot.create(Qt::yellow, QStringLiteral("func3d_console")));
     m_tabs->setCurrentIndex(2);
 }
 
-void KAlgebra::dictionaryFilterChanged(const QString &)
-{
+void KAlgebra::dictionaryFilterChanged(const QString &) {
     if (d_list->model()->rowCount() == 1)
         d_list->setCurrentIndex(d_list->model()->index(0, 0));
 }
 
-void KAlgebra::fullScreen(bool isFull)
-{
+void KAlgebra::fullScreen(bool isFull) {
     m_tabs->setDocumentMode(isFull);
     m_tabs->setTabEnabled(3, !isFull);
     if (isFull) {

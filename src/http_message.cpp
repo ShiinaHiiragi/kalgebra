@@ -8,10 +8,8 @@
 #include <string>
 #include <utility>
 
-namespace simple_http_server
-{
-std::string to_string(HttpMethod method)
-{
+namespace simple_http_server {
+std::string to_string(HttpMethod method) {
     switch (method) {
     case HttpMethod::GET:
         return "GET";
@@ -36,8 +34,7 @@ std::string to_string(HttpMethod method)
     }
 }
 
-std::string to_string(HttpVersion version)
-{
+std::string to_string(HttpVersion version) {
     switch (version) {
     case HttpVersion::HTTP_0_9:
         return "HTTP/0.9";
@@ -52,8 +49,7 @@ std::string to_string(HttpVersion version)
     }
 }
 
-std::string to_string(HttpStatusCode status_code)
-{
+std::string to_string(HttpStatusCode status_code) {
     switch (status_code) {
     case HttpStatusCode::Continue:
         return "Continue";
@@ -86,8 +82,7 @@ std::string to_string(HttpStatusCode status_code)
     }
 }
 
-HttpMethod string_to_method(const std::string &method_string)
-{
+HttpMethod string_to_method(const std::string &method_string) {
     std::string method_string_uppercase;
     std::transform(method_string.begin(), method_string.end(), std::back_inserter(method_string_uppercase), [](char c) {
         return toupper(c);
@@ -115,12 +110,14 @@ HttpMethod string_to_method(const std::string &method_string)
     }
 }
 
-HttpVersion string_to_version(const std::string &version_string)
-{
+HttpVersion string_to_version(const std::string &version_string) {
     std::string version_string_uppercase;
-    std::transform(version_string.begin(), version_string.end(), std::back_inserter(version_string_uppercase), [](char c) {
-        return toupper(c);
-    });
+    std::transform(version_string.begin(),
+        version_string.end(),
+        std::back_inserter(version_string_uppercase),
+        [](char c) {
+            return toupper(c);
+        });
     if (version_string_uppercase == "HTTP/0.9") {
         return HttpVersion::HTTP_0_9;
     } else if (version_string_uppercase == "HTTP/1.0") {
@@ -134,8 +131,7 @@ HttpVersion string_to_version(const std::string &version_string)
     }
 }
 
-std::string to_string(const HttpRequest &request)
-{
+std::string to_string(const HttpRequest &request) {
     std::ostringstream oss;
 
     oss << to_string(request.method()) << ' ';
@@ -149,8 +145,7 @@ std::string to_string(const HttpRequest &request)
     return oss.str();
 }
 
-std::string to_string(const HttpResponse &response, bool send_content)
-{
+std::string to_string(const HttpResponse &response, bool send_content) {
     std::ostringstream oss;
 
     oss << to_string(response.version()) << ' ';
@@ -165,8 +160,7 @@ std::string to_string(const HttpResponse &response, bool send_content)
     return oss.str();
 }
 
-HttpRequest string_to_request(const std::string &request_string)
-{
+HttpRequest string_to_request(const std::string &request_string) {
     std::string start_line, header_lines, message_body;
     std::istringstream iss;
     HttpRequest request;
@@ -213,17 +207,17 @@ HttpRequest string_to_request(const std::string &request_string)
 
         // remove whitespaces from the two strings
         key.erase(std::remove_if(key.begin(),
-                                 key.end(),
-                                 [](char c) {
-                                     return std::isspace(c);
-                                 }),
-                  key.end());
+                      key.end(),
+                      [](char c) {
+                          return std::isspace(c);
+                      }),
+            key.end());
         value.erase(std::remove_if(value.begin(),
-                                   value.end(),
-                                   [](char c) {
-                                       return std::isspace(c);
-                                   }),
-                    value.end());
+                        value.end(),
+                        [](char c) {
+                            return std::isspace(c);
+                        }),
+            value.end());
         request.SetHeader(key, value);
     }
 
@@ -232,8 +226,7 @@ HttpRequest string_to_request(const std::string &request_string)
     return request;
 }
 
-HttpResponse string_to_response(const std::string &response_string)
-{
+HttpResponse string_to_response(const std::string &response_string) {
     throw std::logic_error("Method not implemented");
 }
 

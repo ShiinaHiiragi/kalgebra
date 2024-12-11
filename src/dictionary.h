@@ -22,12 +22,11 @@
 #include <QSortFilterProxyModel>
 #include <QWidget>
 
-namespace Analitza
-{
+namespace Analitza {
 class Variables;
 class PlotsView2D;
 class PlotsModel;
-}
+} // namespace Analitza
 
 class QLabel;
 class QModelIndex;
@@ -36,15 +35,13 @@ class OperatorsModel;
 /**
     @author Aleix Pol
 */
-class Dictionary : public QWidget
-{
+class Dictionary : public QWidget {
     Q_OBJECT
 public:
     Dictionary(QWidget *p = nullptr);
     virtual ~Dictionary();
 
-    QSortFilterProxyModel *model() const
-    {
+    QSortFilterProxyModel *model() const {
         return m_sortProxy;
     }
 

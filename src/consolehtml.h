@@ -19,19 +19,18 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#include <analitza/analyzer.h>
+
 #include <QWebEngineView>
 #include <QWidget>
 
 #include "consolemodel.h"
-#include <analitza/analyzer.h>
 
 class ConsoleModel;
 
-class InlineOptions
-{
+class InlineOptions {
 public:
-    virtual ~InlineOptions()
-    {
+    virtual ~InlineOptions() {
     }
 
     virtual QString id() const = 0;
@@ -46,8 +45,7 @@ public:
  *    @author Aleix Pol Gonzalez
  */
 
-class ConsoleHtml : public QWebEngineView
-{
+class ConsoleHtml : public QWebEngineView {
     Q_OBJECT
 public:
     /** Constructor. Creates a console widget. */
@@ -65,8 +63,7 @@ public:
     /** Retrieves the console mode. */
     ConsoleModel::ConsoleMode mode() const;
 
-    void addOptionsObserver(InlineOptions *opt)
-    {
+    void addOptionsObserver(InlineOptions *opt) {
         m_options += opt;
     }
 

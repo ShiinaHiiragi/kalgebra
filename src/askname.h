@@ -26,12 +26,10 @@
 #include <QRegularExpressionValidator>
 #include <QVBoxLayout>
 
-class AskName : public QDialog
-{
+class AskName : public QDialog {
 public:
     AskName(const QString &text, QWidget *parent)
-        : QDialog(parent)
-    {
+        : QDialog(parent) {
         edit = new QLineEdit(this);
         edit->setValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral("[a-zA-Z][\\w]*")), edit));
 
@@ -40,14 +38,14 @@ public:
         items->addWidget(new QLabel(text, this));
         items->addWidget(edit);
         //             items->addItem(new QSpacerItem());
-        items->addWidget(buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok, Qt::Horizontal, this));
+        items->addWidget(
+            buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok, Qt::Horizontal, this));
 
         connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
         connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     }
 
-    QString name() const
-    {
+    QString name() const {
         return edit->text();
     }
 

@@ -18,11 +18,6 @@
 
 #include "functionedit.h"
 
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-
-#include <KColorScheme>
-
 #include <analitza/analyzer.h>
 #include <analitza/expression.h>
 #include <analitza/value.h>
@@ -35,10 +30,13 @@
 #include <analitzaplot/plotsmodel.h>
 #include <klocalizedstring.h>
 
+#include <KColorScheme>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+
 using namespace Analitza;
 
-namespace
-{
+namespace {
 static const int resolution = 200;
 }
 
@@ -46,8 +44,7 @@ FunctionEdit::FunctionEdit(QWidget *parent)
     : QWidget(parent)
     , m_calcUplimit(0)
     , m_calcDownlimit(0)
-    , m_modmode(false)
-{
+    , m_modmode(false) {
     setWindowTitle(i18n("Add/Edit a function"));
 
     QVBoxLayout *topLayout = new QVBoxLayout(this);
@@ -137,37 +134,31 @@ FunctionEdit::FunctionEdit(QWidget *parent)
     m_valid->setFont(errorFont);
 }
 
-FunctionEdit::~FunctionEdit()
-{
+FunctionEdit::~FunctionEdit() {
 }
 
-void FunctionEdit::clear()
-{
+void FunctionEdit::clear() {
     m_func->setText(QString());
     m_funcsModel->clear();
     edit();
 }
 
-void FunctionEdit::setFunction(const QString &newText)
-{
+void FunctionEdit::setFunction(const QString &newText) {
     m_func->setText(newText);
     m_func->document()->setModified(true);
 }
 
-void FunctionEdit::setColor(const QColor &newColor)
-{
+void FunctionEdit::setColor(const QColor &newColor) {
     m_color->setColor(newColor);
     if (m_funcsModel->rowCount() > 0)
         m_funcsModel->setData(m_funcsModel->index(0), newColor);
 }
 
-void FunctionEdit::colorChange(int)
-{
+void FunctionEdit::colorChange(int) {
     setColor(m_color->color());
 }
 
-static double calcExp(const Analitza::Expression &exp, const QSharedPointer<Analitza::Variables> &v, bool *corr)
-{
+static double calcExp(const Analitza::Expression &exp, const QSharedPointer<Analitza::Variables> &v, bool *corr) {
     Q_ASSERT(exp.isCorrect());
     Analitza::Analyzer d(v);
     d.setExpression(exp);
@@ -181,8 +172,7 @@ static double calcExp(const Analitza::Expression &exp, const QSharedPointer<Anal
         return 0.;
 }
 
-void FunctionEdit::updateUplimit()
-{
+void FunctionEdit::updateUplimit() {
     bool corr = m_uplimit->isCorrect();
     if (corr) {
         Analitza::Expression e = m_uplimit->expression();
@@ -193,8 +183,7 @@ void FunctionEdit::updateUplimit()
     }
 }
 
-void FunctionEdit::updateDownlimit()
-{
+void FunctionEdit::updateDownlimit() {
     bool corr = m_downlimit->isCorrect();
     if (corr) {
         Analitza::Expression e = m_downlimit->expression();
@@ -205,8 +194,7 @@ void FunctionEdit::updateDownlimit()
     }
 }
 
-void FunctionEdit::setState(const QString &text, bool negative)
-{
+void FunctionEdit::setState(const QString &text, bool negative) {
     QFontMetrics fm(m_valid->font());
     m_valid->setText(fm.elidedText(text, Qt::ElideRight, m_valid->width()));
     m_valid->setToolTip(text);
@@ -225,8 +213,7 @@ void FunctionEdit::setState(const QString &text, bool negative)
 }
 
 /// Let's see if the exp is correct
-void FunctionEdit::edit()
-{
+void FunctionEdit::edit() {
     if (m_func->text().isEmpty()) {
         m_func->setCorrect(true);
         m_ok->setEnabled(false);
@@ -277,19 +264,16 @@ void FunctionEdit::edit()
     m_ok->setEnabled(added);
 }
 
-void FunctionEdit::ok()
-{
+void FunctionEdit::ok() {
     if (m_ok->isEnabled())
         Q_EMIT accept();
 }
 
-void FunctionEdit::focusInEvent(QFocusEvent *)
-{
+void FunctionEdit::focusInEvent(QFocusEvent *) {
     m_func->setFocus();
 }
 
-PlaneCurve *FunctionEdit::createFunction() const
-{
+PlaneCurve *FunctionEdit::createFunction() const {
     PlotBuilder req = PlotsFactory::self()->requestPlot(expression(), Dim2D, m_vars);
     PlaneCurve *curve = static_cast<PlaneCurve *>(req.create(color(), name()));
     curve->setResolution(resolution);
@@ -301,24 +285,20 @@ PlaneCurve *FunctionEdit::createFunction() const
     return curve;
 }
 
-Analitza::Expression FunctionEdit::expression() const
-{
+Analitza::Expression FunctionEdit::expression() const {
     return m_func->expression();
 }
 
-void FunctionEdit::setOptionsShown(bool shown)
-{
+void FunctionEdit::setOptionsShown(bool shown) {
     m_viewTabs->setVisible(shown);
 }
 
-void FunctionEdit::resizeEvent(QResizeEvent *)
-{
+void FunctionEdit::resizeEvent(QResizeEvent *) {
     QFontMetrics fm(m_valid->font());
     m_valid->setText(fm.elidedText(m_valid->toolTip(), Qt::ElideRight, m_valid->width()));
 }
 
-void FunctionEdit::setEditing(bool m)
-{
+void FunctionEdit::setEditing(bool m) {
     m_modmode = m;
     m_remove->setVisible(m);
 }

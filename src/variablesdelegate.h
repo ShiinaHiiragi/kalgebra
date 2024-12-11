@@ -21,12 +21,10 @@
 
 #include <QItemDelegate>
 
-class VariablesDelegate : public QItemDelegate
-{
+class VariablesDelegate : public QItemDelegate {
 public:
     VariablesDelegate(QObject *parent = nullptr)
-        : QItemDelegate(parent)
-    {
+        : QItemDelegate(parent) {
     }
     QWidget *createEditor(QWidget *, const QStyleOptionViewItem &, const QModelIndex &) const override;
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;

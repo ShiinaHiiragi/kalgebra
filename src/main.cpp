@@ -19,6 +19,10 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 
+#include <KAboutData>
+#include <KLocalizedString>
+#include <QApplication>
+#include <QCommandLineParser>
 #include <cerrno>
 #include <cstring>
 #include <iostream>
@@ -29,19 +33,13 @@
 #include "kalgebra.h"
 #include "kalgebra_version.h"
 
-#include <KAboutData>
-#include <KLocalizedString>
-#include <QApplication>
-#include <QCommandLineParser>
-
 using simple_http_server::HttpMethod;
 using simple_http_server::HttpRequest;
 using simple_http_server::HttpResponse;
 using simple_http_server::HttpServer;
 using simple_http_server::HttpStatusCode;
 
-HttpResponse respond(const HttpRequest &request)
-{
+HttpResponse respond(const HttpRequest &request) {
     std::cout << "Content: " << request.content() << "\n";
     HttpResponse response(HttpStatusCode::Ok);
     response.SetHeader("Content-Type", "application/json");
@@ -49,8 +47,7 @@ HttpResponse respond(const HttpRequest &request)
     return response;
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     std::string host = "0.0.0.0";
     int port = 8080;
     HttpServer server(host, port);
@@ -64,11 +61,11 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     KLocalizedString::setApplicationDomain("kalgebra");
     KAboutData about(QStringLiteral("kalgebra"),
-                     QStringLiteral("KAlgebra"),
-                     QStringLiteral(KALGEBRA_VERSION_STRING),
-                     i18n("A portable calculator"),
-                     KAboutLicense::GPL,
-                     i18n("(C) 2006-2016 Aleix Pol i Gonzalez"));
+        QStringLiteral("KAlgebra"),
+        QStringLiteral(KALGEBRA_VERSION_STRING),
+        i18n("A portable calculator"),
+        KAboutLicense::GPL,
+        i18n("(C) 2006-2016 Aleix Pol i Gonzalez"));
     about.addAuthor(i18n("Aleix Pol i Gonzalez"), QString(), QStringLiteral("aleixpol@kde.org"));
     about.setTranslator(i18nc("NAME OF TRANSLATORS", "Your names"), i18nc("EMAIL OF TRANSLATORS", "Your emails"));
     KAboutData::setApplicationData(about);

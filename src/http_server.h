@@ -18,8 +18,7 @@
 #include "http_message.h"
 #include "uri.h"
 
-namespace simple_http_server
-{
+namespace simple_http_server {
 // Maximum size of an HTTP message is limited by how much bytes
 // we can read or send via socket each time
 constexpr size_t kMaxBufferSize = 4096;
@@ -29,8 +28,7 @@ struct EventData {
         : fd(0)
         , length(0)
         , cursor(0)
-        , buffer()
-    {
+        , buffer() {
     }
     int fd;
     size_t length;
@@ -47,8 +45,7 @@ using HttpRequestHandler_t = std::function<HttpResponse(const HttpRequest &)>;
 // - Possibly many threads that process HTTP messages and communicate with
 // clients via socket.
 //   The number of workers is defined by a constant
-class HttpServer
-{
+class HttpServer {
 public:
     explicit HttpServer(const std::string &host, std::uint16_t port);
     ~HttpServer() = default;
@@ -59,26 +56,21 @@ public:
 
     void Start();
     void Stop();
-    void RegisterHttpRequestHandler(const std::string &path, HttpMethod method, const HttpRequestHandler_t callback)
-    {
+    void RegisterHttpRequestHandler(const std::string &path, HttpMethod method, const HttpRequestHandler_t callback) {
         Uri uri(path);
         request_handlers_[uri].insert(std::make_pair(method, std::move(callback)));
     }
-    void RegisterHttpRequestHandler(const Uri &uri, HttpMethod method, const HttpRequestHandler_t callback)
-    {
+    void RegisterHttpRequestHandler(const Uri &uri, HttpMethod method, const HttpRequestHandler_t callback) {
         request_handlers_[uri].insert(std::make_pair(method, std::move(callback)));
     }
 
-    std::string host() const
-    {
+    std::string host() const {
         return host_;
     }
-    std::uint16_t port() const
-    {
+    std::uint16_t port() const {
         return port_;
     }
-    bool running() const
-    {
+    bool running() const {
         return running_;
     }
 

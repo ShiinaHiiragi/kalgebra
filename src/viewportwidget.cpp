@@ -18,15 +18,15 @@
 
 #include "viewportwidget.h"
 
+#include <klocalizedstring.h>
+
 #include <QDoubleSpinBox>
 #include <QFormLayout>
 #include <QPushButton>
-#include <klocalizedstring.h>
 #include <limits>
 
 ViewportWidget::ViewportWidget(QWidget *parent)
-    : QWidget(parent)
-{
+    : QWidget(parent) {
     m_top = new QDoubleSpinBox(this);
     m_left = new QDoubleSpinBox(this);
     m_width = new QDoubleSpinBox(this);
@@ -56,21 +56,18 @@ ViewportWidget::ViewportWidget(QWidget *parent)
     setLayout(upperLayout);
 }
 
-QRectF ViewportWidget::viewport() const
-{
+QRectF ViewportWidget::viewport() const {
     return QRectF(m_left->value(), m_top->value(), m_width->value(), -m_height->value());
 }
 
-void ViewportWidget::setViewport(const QRectF &current)
-{
+void ViewportWidget::setViewport(const QRectF &current) {
     m_top->setValue(current.top());
     m_left->setValue(current.left());
     m_width->setValue(current.width());
     m_height->setValue(-current.height());
 }
 
-void ViewportWidget::emitViewport()
-{
+void ViewportWidget::emitViewport() {
     Q_EMIT viewportChange(viewport());
 }
 

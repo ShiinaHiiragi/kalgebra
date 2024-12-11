@@ -17,6 +17,7 @@
  *************************************************************************************/
 
 #include "dictionary.h"
+
 #include <analitza/expression.h>
 #include <analitza/variables.h>
 #include <analitzagui/operatorsmodel.h>
@@ -24,16 +25,15 @@
 #include <analitzaplot/functiongraph.h>
 #include <analitzaplot/plotsfactory.h>
 #include <analitzaplot/plotsmodel.h>
+#include <klocalizedstring.h>
 
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <klocalizedstring.h>
 
 Dictionary::Dictionary(QWidget *p)
-    : QWidget(p)
-{
+    : QWidget(p) {
     m_ops = new OperatorsModel(this);
     m_sortProxy = new QSortFilterProxyModel(this);
     m_sortProxy->setSourceModel(m_ops);
@@ -78,12 +78,10 @@ Dictionary::Dictionary(QWidget *p)
     //     connect(m_list, SIGNAL(clicked(QModelIndex)), this, SLOT(activated(QModelIndex)));
 }
 
-Dictionary::~Dictionary()
-{
+Dictionary::~Dictionary() {
 }
 
-void Dictionary::activated(const QModelIndex &idx, const QModelIndex &prev)
-{
+void Dictionary::activated(const QModelIndex &idx, const QModelIndex &prev) {
     Q_UNUSED(prev);
 
     m_funcs->clear();
@@ -106,7 +104,9 @@ void Dictionary::activated(const QModelIndex &idx, const QModelIndex &prev)
         m_sample->setText(sample);
         m_example->setText(example);
 
-        m_funcs->addPlot(Analitza::PlotsFactory::self()->requestPlot(e, Analitza::Dim2D, m_vars).create(QColor(0, 150, 0), QStringLiteral("dict")));
+        m_funcs->addPlot(Analitza::PlotsFactory::self()
+                             ->requestPlot(e, Analitza::Dim2D, m_vars)
+                             .create(QColor(0, 150, 0), QStringLiteral("dict")));
     } else {
         m_name->setText(QString());
         m_descr->setText(QString());
@@ -115,8 +115,7 @@ void Dictionary::activated(const QModelIndex &idx, const QModelIndex &prev)
     }
 }
 
-void Dictionary::setFilter(const QString &filter)
-{
+void Dictionary::setFilter(const QString &filter) {
     m_sortProxy->setFilterFixedString(filter);
 }
 

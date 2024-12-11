@@ -23,21 +23,19 @@
 #include <QLabel>
 
 class QDialogButtonBox;
-namespace Analitza
-{
+namespace Analitza {
 class Analyzer;
 class Variables;
 class Expression;
 class ExpressionEdit;
-}
+} // namespace Analitza
 
 /**
  *    The VarEdit provides a dialog to allow users to edit/create a variable.
  *    @author Aleix Pol i Gonzalez
  */
 
-class VarEdit : public QDialog
-{
+class VarEdit : public QDialog {
     Q_OBJECT
 public:
     /** Constructor. Creates a variable editing dialog. */

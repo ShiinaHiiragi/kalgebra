@@ -17,8 +17,7 @@
 
 #include "http_message.h"
 
-namespace simple_http_server
-{
+namespace simple_http_server {
 HttpServer::HttpServer(const std::string &host, std::uint16_t port)
     : host_(host)
     , port_(port)
@@ -26,13 +25,11 @@ HttpServer::HttpServer(const std::string &host, std::uint16_t port)
     , running_(false)
     , worker_epoll_fd_()
     , rng_(std::chrono::steady_clock::now().time_since_epoch().count())
-    , sleep_times_(10, 100)
-{
+    , sleep_times_(10, 100) {
     CreateSocket();
 }
 
-void HttpServer::Start()
-{
+void HttpServer::Start() {
     int opt = 1;
     sockaddr_in server_address;
 
@@ -63,8 +60,7 @@ void HttpServer::Start()
     }
 }
 
-void HttpServer::Stop()
-{
+void HttpServer::Stop() {
     running_ = false;
     listener_thread_.join();
     for (int i = 0; i < kThreadPoolSize; i++) {
@@ -76,15 +72,13 @@ void HttpServer::Stop()
     close(sock_fd_);
 }
 
-void HttpServer::CreateSocket()
-{
+void HttpServer::CreateSocket() {
     if ((sock_fd_ = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) < 0) {
         throw std::runtime_error("Failed to create a TCP socket");
     }
 }
 
-void HttpServer::SetUpEpoll()
-{
+void HttpServer::SetUpEpoll() {
     for (int i = 0; i < kThreadPoolSize; i++) {
         if ((worker_epoll_fd_[i] = epoll_create1(0)) < 0) {
             throw std::runtime_error("Failed to create epoll file descriptor for worker");
@@ -92,8 +86,7 @@ void HttpServer::SetUpEpoll()
     }
 }
 
-void HttpServer::Listen()
-{
+void HttpServer::Listen() {
     EventData *client_data;
     sockaddr_in client_address;
     socklen_t client_len = sizeof(client_address);
@@ -122,8 +115,7 @@ void HttpServer::Listen()
     }
 }
 
-void HttpServer::ProcessEvents(int worker_id)
-{
+void HttpServer::ProcessEvents(int worker_id) {
     EventData *data;
     int epoll_fd = worker_epoll_fd_[worker_id];
     bool active = true;
@@ -157,8 +149,7 @@ void HttpServer::ProcessEvents(int worker_id)
     }
 }
 
-void HttpServer::HandleEpollEvent(int epoll_fd, EventData *data, std::uint32_t events)
-{
+void HttpServer::HandleEpollEvent(int epoll_fd, EventData *data, std::uint32_t events) {
     int fd = data->fd;
     EventData *request, *response;
 
@@ -211,8 +202,7 @@ void HttpServer::HandleEpollEvent(int epoll_fd, EventData *data, std::uint32_t e
     }
 }
 
-void HttpServer::HandleHttpData(const EventData &raw_request, EventData *raw_response)
-{
+void HttpServer::HandleHttpData(const EventData &raw_request, EventData *raw_response) {
     std::string request_string(raw_request.buffer), response_string;
     HttpRequest http_request;
     HttpResponse http_response;
@@ -237,8 +227,7 @@ void HttpServer::HandleHttpData(const EventData &raw_request, EventData *raw_res
     raw_response->length = response_string.length();
 }
 
-HttpResponse HttpServer::HandleHttpRequest(const HttpRequest &request)
-{
+HttpResponse HttpServer::HandleHttpRequest(const HttpRequest &request) {
     auto it = request_handlers_.find(request.uri());
     if (it == request_handlers_.end()) { // this uri is not registered
         return HttpResponse(HttpStatusCode::NotFound);
@@ -250,8 +239,7 @@ HttpResponse HttpServer::HandleHttpRequest(const HttpRequest &request)
     return callback_it->second(request); // call handler to process the request
 }
 
-void HttpServer::control_epoll_event(int epoll_fd, int op, int fd, std::uint32_t events, void *data)
-{
+void HttpServer::control_epoll_event(int epoll_fd, int op, int fd, std::uint32_t events, void *data) {
     if (op == EPOLL_CTL_DEL) {
         if (epoll_ctl(epoll_fd, op, fd, nullptr) < 0) {
             throw std::runtime_error("Failed to remove file descriptor");

@@ -22,8 +22,7 @@
 #include <QWidget>
 class QDoubleSpinBox;
 
-class ViewportWidget : public QWidget
-{
+class ViewportWidget : public QWidget {
     Q_OBJECT
 public:
     explicit ViewportWidget(QWidget *parent = nullptr);
