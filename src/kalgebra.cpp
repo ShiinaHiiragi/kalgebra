@@ -19,6 +19,7 @@
 #include "kalgebra.h"
 #include "json.h"
 
+#include <qglobal.h>
 #include <string>
 
 #include <analitza/value.h>
@@ -31,6 +32,7 @@
 #include <analitzaplot/functiongraph.h>
 #include <analitzaplot/planecurve.h>
 #include <analitzaplot/plotsfactory.h>
+#include <analitzaplot/plotitem.h>
 #include <analitzaplot/plotsmodel.h>
 
 #include <KConfig>
@@ -52,6 +54,7 @@
 #include <QProcess>
 #include <QRandomGenerator>
 #include <QStatusBar>
+#include <QString>
 #include <QStringList>
 #include <QTableView>
 #include <QToolButton>
@@ -447,10 +450,33 @@ std::string KAlgebra::status_vars() {
     return result.dump();
 }
 
+// ATTENTION: go to your header file of Analitza6 such as /usr/include/Analitza6/analitzaplot/plotsmodel.h
+// and change `private` tag of `QList<PlotItem*> m_items` into `public` one since we need to access `m_items`
+std::string KAlgebra::status_func2d(std::vector<double> ind_vars) {
+    json result = "[]"_json;
+    for (Analitza::PlotItem* func: b_funcsModel->m_items) {
+        json sub_result;
+        sub_result["expr"] = func->expression().toString().toStdString();
+        sub_result["color"] = func->color().name().toStdString();
+
+        QSharedPointer<Analitza::Variables> vars(new Analitza::Variables());
+        vars->modify(QStringLiteral("f"), func->expression());
+        Analitza::Analyzer anly(vars);
+
+        for (double ind_var: ind_vars) {
+            std::string num_lit = json(ind_var).dump();
+            std::string str_lit = "f(" + num_lit + ")";
+            Analitza::Expression call_expr(QString::fromStdString(str_lit));
+            anly.setExpression(call_expr);
+            sub_result[num_lit] = anly.calculate().toString().toDouble();
+        }
+        result.push_back(sub_result);
+    }
+    return result.dump();
+}
+
 void KAlgebra::new_func() {
     Analitza::FunctionGraph *f = b_funced->createFunction();
-    // qDebug() << f->expression().toString();
-    // qDebug() << f->color();
 
     if (b_funced->editing()) {
         QModelIndex idx = b_funcsModel->indexForName(f->name());

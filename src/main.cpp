@@ -28,6 +28,7 @@
 #include <iostream>
 #include <string>
 
+#include "json.h"
 #include "http_message.h"
 #include "http_server.h"
 #include "kalgebra.h"
@@ -38,18 +39,34 @@ using simple_http_server::HttpRequest;
 using simple_http_server::HttpResponse;
 using simple_http_server::HttpServer;
 using simple_http_server::HttpStatusCode;
+using json = nlohmann::json;
 
 KAlgebra *global_app = nullptr;
 
 HttpResponse status_vars(const HttpRequest &_) {
     assert(global_app != nullptr);
-    std::cout << "GET /vars"
-              << "\n";
+    std::cout << "GET /vars" << "\n";
 
     HttpResponse response(HttpStatusCode::Ok);
     response.SetHeader("Content-Type", "application/json");
     response.SetContent(global_app->status_vars());
     return response;
+};
+
+HttpResponse status_func2d(const HttpRequest &request) {
+    assert(global_app != nullptr);
+    std::string query = request.content();
+    std::cout << "POST /func/2d with " << query << "\n";
+
+    try {
+        HttpResponse response(HttpStatusCode::Ok);
+        response.SetHeader("Content-Type", "application/json");
+        response.SetContent(global_app->status_func2d(json::parse(query)));
+        return response;
+    } catch (...) {
+        HttpResponse response(HttpStatusCode::BadRequest);
+        return response;
+    }
 };
 
 int main(int argc, char *argv[]) {
@@ -83,8 +100,10 @@ int main(int argc, char *argv[]) {
 
     server.RegisterHttpRequestHandler("/vars", HttpMethod::HEAD, status_vars);
     server.RegisterHttpRequestHandler("/vars", HttpMethod::GET, status_vars);
-
+    server.RegisterHttpRequestHandler("/func/2d", HttpMethod::HEAD, status_func2d);
+    server.RegisterHttpRequestHandler("/func/2d", HttpMethod::POST, status_func2d);
     server.Start();
+
     std::cout << "Server listening on " << host << ":" << port << std::endl;
     return app.exec();
 }

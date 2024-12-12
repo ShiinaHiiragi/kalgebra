@@ -54,6 +54,7 @@ public:
     void add3D(const Analitza::Expression &exp);
 
     std::string status_vars();
+    std::string status_func2d(std::vector<double>);
 
 private:
     QLabel *m_status;
