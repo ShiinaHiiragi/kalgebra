@@ -15,6 +15,7 @@ target_sources(kalgebra PRIVATE
     http_message.h
     http_server.cpp
     http_server.h
+    json.h
     kalgebra.cpp
     kalgebra.h
     main.cpp

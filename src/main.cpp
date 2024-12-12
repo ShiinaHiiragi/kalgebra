@@ -39,25 +39,20 @@ using simple_http_server::HttpResponse;
 using simple_http_server::HttpServer;
 using simple_http_server::HttpStatusCode;
 
-HttpResponse respond(const HttpRequest &request) {
-    std::cout << "Content: " << request.content() << "\n";
+KAlgebra *global_app = nullptr;
+
+HttpResponse status_vars(const HttpRequest &_) {
+    assert(global_app != nullptr);
+    std::cout << "GET /vars"
+              << "\n";
+
     HttpResponse response(HttpStatusCode::Ok);
     response.SetHeader("Content-Type", "application/json");
-    response.SetContent("{\"name\": \"Roselia\"}");
+    response.SetContent(global_app->status_vars());
     return response;
 };
 
 int main(int argc, char *argv[]) {
-    std::string host = "0.0.0.0";
-    int port = 8080;
-    HttpServer server(host, port);
-
-    server.RegisterHttpRequestHandler("/", HttpMethod::HEAD, respond);
-    server.RegisterHttpRequestHandler("/", HttpMethod::POST, respond);
-
-    server.Start();
-    std::cout << "Server listening on " << host << ":" << port << std::endl;
-
     QApplication app(argc, argv);
     KLocalizedString::setApplicationDomain("kalgebra");
     KAboutData about(QStringLiteral("kalgebra"),
@@ -80,6 +75,16 @@ int main(int argc, char *argv[]) {
 
     KAlgebra widget;
     widget.show();
+    global_app = &widget;
 
+    std::string host = "0.0.0.0";
+    int port = 8080;
+    HttpServer server(host, port);
+
+    server.RegisterHttpRequestHandler("/vars", HttpMethod::HEAD, status_vars);
+    server.RegisterHttpRequestHandler("/vars", HttpMethod::GET, status_vars);
+
+    server.Start();
+    std::cout << "Server listening on " << host << ":" << port << std::endl;
     return app.exec();
 }

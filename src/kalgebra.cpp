@@ -17,6 +17,9 @@
  *************************************************************************************/
 
 #include "kalgebra.h"
+#include "json.h"
+
+#include <string>
 
 #include <analitza/value.h>
 #include <analitza/variables.h>
@@ -63,6 +66,7 @@
 #include "viewportwidget.h"
 
 using namespace Qt::Literals::StringLiterals;
+using json = nlohmann::json;
 
 class Add2DOption : public InlineOptions {
 public:
@@ -434,10 +438,19 @@ void KAlgebra::add2D(const Analitza::Expression &exp) {
     m_tabs->setCurrentIndex(1);
 }
 
+std::string KAlgebra::status_vars() {
+    json result;
+    QSharedPointer<Analitza::Variables> vs = c_varsModel->variables();
+    for (int idx = 0; idx < vs->keys().length(); idx += 1) {
+        result[vs->keys()[idx].toStdString()] = vs->value(vs->keys()[idx])->toString().toStdString();
+    }
+    return result.dump();
+}
+
 void KAlgebra::new_func() {
     Analitza::FunctionGraph *f = b_funced->createFunction();
-    qDebug() << f->expression().toString();
-    qDebug() << f->color();
+    // qDebug() << f->expression().toString();
+    // qDebug() << f->color();
 
     if (b_funced->editing()) {
         QModelIndex idx = b_funcsModel->indexForName(f->name());
@@ -567,7 +580,7 @@ void KAlgebra::new_func3d() {
     Analitza::Expression exp = t_exp->expression();
     Analitza::PlotBuilder plot =
         Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim3D, c_results->analitza()->variables());
-    qDebug() << plot.create(Qt::yellow, QStringLiteral("func3d"))->expression().toString();
+    // qDebug() << plot.create(Qt::yellow, QStringLiteral("func3d"))->expression().toString();
     if (plot.canDraw()) {
         t_model3d->clear();
         t_model3d->addPlot(plot.create(Qt::yellow, QStringLiteral("func3d")));
@@ -640,12 +653,6 @@ void KAlgebra::tabChanged(int n) {
     menuEnabledHelper(t_menu, n == 2);
 
     m_status->clear();
-
-    QSharedPointer<Analitza::Variables> vs = c_varsModel->variables();
-    for (int idx = 0; idx < vs->keys().length(); idx += 1) {
-        qDebug() << vs->keys()[idx] << ": " << vs->value(vs->keys()[idx])->toString();
-    }
-    qDebug() << "\n";
 
     switch (n) {
     case 0:

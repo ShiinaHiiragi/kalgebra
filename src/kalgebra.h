@@ -19,6 +19,8 @@
 #ifndef KALGEBRA_H
 #define KALGEBRA_H
 
+#include <string>
+
 #include <QLabel>
 #include <QListView>
 #include <QMainWindow>
@@ -50,6 +52,8 @@ public:
 
     void add2D(const Analitza::Expression &exp);
     void add3D(const Analitza::Expression &exp);
+
+    std::string status_vars();
 
 private:
     QLabel *m_status;
