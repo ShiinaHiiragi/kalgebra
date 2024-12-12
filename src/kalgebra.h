@@ -55,6 +55,8 @@ public:
 
     std::string status_vars();
     std::string status_func2d(std::vector<double>);
+    std::string status_func3d(std::vector<std::vector<double>>);
+    std::string expr_3d;
 
 private:
     QLabel *m_status;

@@ -475,6 +475,32 @@ std::string KAlgebra::status_func2d(std::vector<double> ind_vars) {
     return result.dump();
 }
 
+std::string KAlgebra::status_func3d(std::vector<std::vector<double>> ind_vars) {
+    json result = "{}"_json;
+    result["expr"] = expr_3d;
+
+    Analitza::Expression eq_3d(QString::fromStdString(expr_3d));
+    Analitza::Variables vars;
+    vars.modify(QStringLiteral("f"), eq_3d.equationToFunction());
+    Analitza::Analyzer anly(&vars);
+
+    for (std::vector<double> ind_var: ind_vars) {
+        assert(ind_var.size() == 3);
+        std::string pair_lit = "("
+            + json(ind_var[expr_3d[1] - 'x']).dump()
+            + ", "
+            + json(ind_var[expr_3d[4] - 'x']).dump()
+            + ", "
+            + json(ind_var[expr_3d[7] - 'x']).dump()
+            + ")";
+
+        Analitza::Expression call_expr(QString::fromStdString("f" + pair_lit));
+        anly.setExpression(call_expr);
+        result[pair_lit] = json(anly.calculate().toString().toDouble()).dump();
+    }
+    return result.dump();
+}
+
 void KAlgebra::new_func() {
     Analitza::FunctionGraph *f = b_funced->createFunction();
 
@@ -606,10 +632,13 @@ void KAlgebra::new_func3d() {
     Analitza::Expression exp = t_exp->expression();
     Analitza::PlotBuilder plot =
         Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim3D, c_results->analitza()->variables());
-    // qDebug() << plot.create(Qt::yellow, QStringLiteral("func3d"))->expression().toString();
+
+    Analitza::FunctionGraph* new_plot = plot.create(Qt::yellow, QStringLiteral("func3d"));
+    expr_3d = new_plot->expression().toString().toStdString();
+
     if (plot.canDraw()) {
         t_model3d->clear();
-        t_model3d->addPlot(plot.create(Qt::yellow, QStringLiteral("func3d")));
+        t_model3d->addPlot(new_plot);
     } else
         changeStatusBar(i18n("Errors: %1", plot.errors().join(i18n(", "))));
 }

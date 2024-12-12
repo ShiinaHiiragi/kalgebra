@@ -51,7 +51,7 @@ HttpResponse status_vars(const HttpRequest &_) {
     response.SetHeader("Content-Type", "application/json");
     response.SetContent(global_app->status_vars());
     return response;
-};
+}
 
 HttpResponse status_func2d(const HttpRequest &request) {
     assert(global_app != nullptr);
@@ -67,7 +67,23 @@ HttpResponse status_func2d(const HttpRequest &request) {
         HttpResponse response(HttpStatusCode::BadRequest);
         return response;
     }
-};
+}
+
+HttpResponse status_func3d(const HttpRequest &request) {
+    assert(global_app != nullptr);
+    std::string query = request.content();
+    std::cout << "POST /func/3d with " << query << "\n";
+
+    try {
+        HttpResponse response(HttpStatusCode::Ok);
+        response.SetHeader("Content-Type", "application/json");
+        response.SetContent(global_app->status_func3d(json::parse(query)));
+        return response;
+    } catch (...) {
+        HttpResponse response(HttpStatusCode::BadRequest);
+        return response;
+    }
+}
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
@@ -100,8 +116,12 @@ int main(int argc, char *argv[]) {
 
     server.RegisterHttpRequestHandler("/vars", HttpMethod::HEAD, status_vars);
     server.RegisterHttpRequestHandler("/vars", HttpMethod::GET, status_vars);
+
     server.RegisterHttpRequestHandler("/func/2d", HttpMethod::HEAD, status_func2d);
     server.RegisterHttpRequestHandler("/func/2d", HttpMethod::POST, status_func2d);
+
+    server.RegisterHttpRequestHandler("/func/3d", HttpMethod::HEAD, status_func3d);
+    server.RegisterHttpRequestHandler("/func/3d", HttpMethod::POST, status_func3d);
     server.Start();
 
     std::cout << "Server listening on " << host << ":" << port << std::endl;
