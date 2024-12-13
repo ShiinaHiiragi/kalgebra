@@ -633,11 +633,10 @@ void KAlgebra::new_func3d() {
     Analitza::PlotBuilder plot =
         Analitza::PlotsFactory::self()->requestPlot(exp, Analitza::Dim3D, c_results->analitza()->variables());
 
-    Analitza::FunctionGraph* new_plot = plot.create(Qt::yellow, QStringLiteral("func3d"));
-    expr_3d = new_plot->expression().toString().toStdString();
-
     if (plot.canDraw()) {
         t_model3d->clear();
+        Analitza::FunctionGraph* new_plot = plot.create(Qt::yellow, QStringLiteral("func3d"));
+        expr_3d = new_plot->expression().toString().toStdString();
         t_model3d->addPlot(new_plot);
     } else
         changeStatusBar(i18n("Errors: %1", plot.errors().join(i18n(", "))));
