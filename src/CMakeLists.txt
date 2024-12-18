@@ -105,6 +105,7 @@ install(CODE [[
             if((NOT FILE MATCHES "^/lib/x86_64-linux-gnu")
                 AND (${INDEX_FILTER_DEPS} EQUAL -1)
                 AND (${INDEX_RETURN_VALUE} EQUAL -1)
+                AND (NOT FILE MATCHES "^/home/PJLAB/wangyian/aqt")
             )
                 list(APPEND RETURN_VALUE ${FILE})
             endif()
@@ -114,12 +115,13 @@ install(CODE [[
         return()
     endfunction()
 
-    function(set_dependencies SOURCE_LIBS SUB_PATH)
+    function(set_dependencies SOURCE_LIBS PATH_NAME)
         set(GLOBAL_DEPS ${SOURCE_LIBS})
         set(INSTALLED_DEPS "")
-        set(LIB_RPATH "${CMAKE_INSTALL_PREFIX}/${SUB_PATH}")
+        set(LIB_RPATH "${CMAKE_INSTALL_PREFIX}/${PATH_NAME}")
 
         while(GLOBAL_DEPS)
+            message("++ ${GLOBAL_DEPS}")
             list(GET GLOBAL_DEPS 0 FIRST_LIB)
             list(REMOVE_AT GLOBAL_DEPS 0)
             message(">> Installing  ${FIRST_LIB}")
@@ -134,7 +136,7 @@ install(CODE [[
 
             set(FILTER_DEPS "")
             list(APPEND FILTER_DEPS ${GLOBAL_DEPS} ${INSTALLED_DEPS})
-            get_dependencies(${FIRST_LIB} ${FILTER_DEPS})
+            get_dependencies(${FIRST_LIB} "${FILTER_DEPS}")
             list(APPEND GLOBAL_DEPS ${RETURN_VALUE})
         endwhile()
 
@@ -159,5 +161,5 @@ install(CODE [[
             list(APPEND KDE_LIB ${LIB_ITEM})
         endif()
     endforeach()
-    set_dependencies(${KDE_LIB} ${LIB_DIR})
+    set_dependencies("${KDE_LIB}" ${LIB_DIR})
 ]])
