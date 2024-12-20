@@ -2,6 +2,7 @@
 
 ## Build
 1. Configure CMake
+
 2. Build & install:
 
     ```shell
@@ -24,11 +25,19 @@
     mkdir /tmp/kalgebra-kai/DEBIAN
     cp src/control /tmp/kalgebra-kai/DEBIAN/control
     cd /tmp; dpkg-deb --build kalgebra-kai; cd -
-    mv /tmp/kalgebra-kai.deb .
     ```
 
 ## Execution
+1. Download `aqt` and install `QT 6.5.0`:
 
-```shell
-LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /tmp/kalgebra/bin/kalgebra
-```
+    ```shell
+    pip install aqtinstall
+    aqt install-qt linux desktop 6.5.0 gcc_64 -m all -O ~
+    ```
+
+2. Run Kalgebra with `LD_LIBRARY_PATH` specified:
+
+    ```shell
+    sudo dpkg -i /tmp/kalgebra-kai.deb
+    LD_LIBRARY_PATH=~/6.5.0/gcc_64/lib /app/bin/kalgebra
+    ```
