@@ -66,39 +66,39 @@ if(KF6DocTools_FOUND AND Qt6WebEngineWidgets_FOUND AND KF6ConfigWidgets_FOUND AN
     add_subdirectory(src)
 endif()
 
-if (Plasma_FOUND AND NOT CMAKE_SYSTEM MATCHES Android*)
-    add_subdirectory(plasmoids)
-endif()
+# if (Plasma_FOUND AND NOT CMAKE_SYSTEM MATCHES Android*)
+#     add_subdirectory(plasmoids)
+# endif()
 
-add_subdirectory(icons)
-add_subdirectory(mobile)
+# add_subdirectory(icons)
+# add_subdirectory(mobile)
 
-if(READLINE_FOUND AND CURSES_FOUND)
-    add_subdirectory(calgebra)
-endif()
+# if(READLINE_FOUND AND CURSES_FOUND)
+#     add_subdirectory(calgebra)
+# endif()
 
-if(KF6DocTools_FOUND)
-  add_subdirectory(utils)
+# if(KF6DocTools_FOUND)
+#   add_subdirectory(utils)
 
-  add_custom_target(commandsdoc
-    ${CMAKE_CURRENT_BINARY_DIR}/utils/docbook_analitzacommands commands.docbook
-    DEPENDS docbook_analitzacommands
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/
-    COMMENT "Generating commands docbook information"
-  )
+#   add_custom_target(commandsdoc
+#     ${CMAKE_CURRENT_BINARY_DIR}/utils/docbook_analitzacommands commands.docbook
+#     DEPENDS docbook_analitzacommands
+#     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/
+#     COMMENT "Generating commands docbook information"
+#   )
 
-  add_subdirectory(doc)
-endif()
+#   add_subdirectory(doc)
+# endif()
 
-ki18n_install(po)
-if (KF6DocTools_FOUND)
-    kdoctools_install(po)
-endif()
-feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
+# ki18n_install(po)
+# if (KF6DocTools_FOUND)
+#     kdoctools_install(po)
+# endif()
+# feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
-if (NOT ANDROID)
-    file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES src/*.cpp src/*.h mobile/*.cpp mobile/*.h utils/*.cpp utils/*.h)
-    kde_clang_format(${ALL_CLANG_FORMAT_SOURCE_FILES})
+# if (NOT ANDROID)
+#     file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES src/*.cpp src/*.h mobile/*.cpp mobile/*.h utils/*.cpp utils/*.h)
+#     kde_clang_format(${ALL_CLANG_FORMAT_SOURCE_FILES})
 
-    kde_configure_git_pre_commit_hook(CHECKS CLANG_FORMAT)
-endif()
+#     kde_configure_git_pre_commit_hook(CHECKS CLANG_FORMAT)
+# endif()
