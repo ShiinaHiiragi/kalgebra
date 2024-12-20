@@ -15,14 +15,3 @@ Expression:
 Doc:
 - Document about piecewise
 - Document about anything else
-
-/tmp/kalgebra/bin/platforms
-~/aqt/6.5.0/gcc_64/plugins/platforms
-~/kde/usr/lib/x86_64-linux-gnu
-
-readelf -x .rodata /tmp/kalgebra/bin/platforms/libqxcb.so
-readelf -x .rodata ~/aqt/6.5.0/gcc_64/plugins/platforms/libqxcb.so
-QT_DEBUG_PLUGINS=1 ~/kde/build/kalgebra/bin/kalgebra
-QT_DEBUG_PLUGINS=1 /tmp/kalgebra/bin/kalgebra
-
-LD_LIBRARY_PATH=~/aqt/6.5.0/gcc_64/lib /tmp/kalgebra/bin/kalgebra

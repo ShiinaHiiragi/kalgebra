@@ -16,6 +16,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA   *
  *************************************************************************************/
 
+#define SERVER_VERSION "0.1"
+
 #include <sys/resource.h>
 #include <sys/time.h>
 
@@ -42,6 +44,16 @@ using simple_http_server::HttpStatusCode;
 using json = nlohmann::json;
 
 KAlgebra *global_app = nullptr;
+
+HttpResponse status_version(const HttpRequest &_) {
+    assert(global_app != nullptr);
+    std::cout << "GET /version" << "\n";
+
+    HttpResponse response(HttpStatusCode::Ok);
+    response.SetHeader("Content-Type", "application/json");
+    response.SetContent(SERVER_VERSION);
+    return response;
+}
 
 HttpResponse status_vars(const HttpRequest &_) {
     assert(global_app != nullptr);
@@ -113,6 +125,9 @@ int main(int argc, char *argv[]) {
     std::string host = "0.0.0.0";
     int port = 8080;
     HttpServer server(host, port);
+
+    server.RegisterHttpRequestHandler("/version", HttpMethod::HEAD, status_version);
+    server.RegisterHttpRequestHandler("/version", HttpMethod::GET, status_version);
 
     server.RegisterHttpRequestHandler("/vars", HttpMethod::HEAD, status_vars);
     server.RegisterHttpRequestHandler("/vars", HttpMethod::GET, status_vars);

@@ -55,11 +55,6 @@ target_link_libraries(kalgebra
     Qt6::OpenGLWidgets
 )
 
-# install(TARGETS kalgebra ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
-# install(PROGRAMS org.kde.kalgebra.desktop DESTINATION ${KDE_INSTALL_APPDIR})
-# install(FILES kalgebra.xml DESTINATION ${KDE_INSTALL_DATADIR}/katepart5/syntax )
-# install(FILES org.kde.kalgebra.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
-
 find_program(BASH_PROGRAM bash)
 if (BASH_PROGRAM)
     message(STATUS "BASH FOUND")
@@ -83,6 +78,21 @@ install(TARGETS kalgebra RUNTIME DESTINATION bin)
 install(CODE "set(LIB_DIR \"${LIB_DIR}\")")
 install(CODE "set(CMAKE_INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}\")")
 install(CODE [[
+    function(execute_patchelf COMMAND_LINES)
+        find_program(BASH_PROGRAM bash)
+        execute_process(
+            COMMAND ${BASH_PROGRAM} -c "${COMMAND_LINES}"
+            RESULT_VARIABLE RESULT
+            OUTPUT_QUIET
+            ERROR_QUIET
+        )
+        if (RESULT EQUAL 0)
+            message(STATUS "RUNPATH MODIFIED")
+        else()
+            message(FATAL_ERROR "UNKNOWN ERROR OCCURRED WHEN MODIFYING RUNPATH")
+        endif()
+    endfunction()
+
     function(get_dependencies SOURCE_LIB FILTER_DEPS)
         set(RETURN_VALUE "")
         file(GET_RUNTIME_DEPENDENCIES
@@ -121,7 +131,6 @@ install(CODE [[
         set(LIB_RPATH "${CMAKE_INSTALL_PREFIX}/${PATH_NAME}")
 
         while(GLOBAL_DEPS)
-            message("++ ${GLOBAL_DEPS}")
             list(GET GLOBAL_DEPS 0 FIRST_LIB)
             list(REMOVE_AT GLOBAL_DEPS 0)
             message(">> Installing  ${FIRST_LIB}")
@@ -139,19 +148,7 @@ install(CODE [[
             get_dependencies(${FIRST_LIB} "${FILTER_DEPS}")
             list(APPEND GLOBAL_DEPS ${RETURN_VALUE})
         endwhile()
-
-        find_program(BASH_PROGRAM bash)
-        execute_process(
-            COMMAND ${BASH_PROGRAM} -c "find \"${LIB_RPATH}\" -type f | while read file; do if file \"$file\" | grep -q \"ELF\"; then patchelf --set-rpath \\\$ORIGIN $file; fi; done"
-            RESULT_VARIABLE RESULT
-            OUTPUT_QUIET
-            ERROR_QUIET
-        )
-        if (RESULT EQUAL 0)
-            message(STATUS "RUNPATH MODIFIED")
-        else()
-            message(FATAL_ERROR "UNKNOWN ERROR OCCURRED WHEN MODIFYING RUNPATH")
-        endif()
+        execute_patchelf("find \"${LIB_RPATH}\" -type f | while read file; do if file \"$file\" | grep -q \"ELF\"; then patchelf --set-rpath \\\$ORIGIN $file; fi; done")
     endfunction()
 
     set(KDE_LIB "")
@@ -162,4 +159,5 @@ install(CODE [[
         endif()
     endforeach()
     set_dependencies("${KDE_LIB}" ${LIB_DIR})
+    execute_patchelf("patchelf --set-rpath \\\$ORIGIN/../bin $<TARGET_FILE:kalgebra>")
 ]])
