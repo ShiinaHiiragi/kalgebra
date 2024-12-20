@@ -1,3 +1,4 @@
+set(BIN_DIR "bin")
 set(LIB_DIR "lib")
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_DIR}")
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags")
@@ -74,7 +75,8 @@ else()
     message(FATAL_ERROR "PATCHELF NOT FOUND; RUN `apt install patchelf` FIRST")
 endif()
 
-install(TARGETS kalgebra RUNTIME DESTINATION bin)
+install(TARGETS kalgebra RUNTIME DESTINATION ${BIN_DIR})
+install(CODE "set(BIN_DIR \"${BIN_DIR}\")")
 install(CODE "set(LIB_DIR \"${LIB_DIR}\")")
 install(CODE "set(CMAKE_INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}\")")
 install(CODE [[
@@ -159,5 +161,5 @@ install(CODE [[
         endif()
     endforeach()
     set_dependencies("${KDE_LIB}" ${LIB_DIR})
-    execute_patchelf("patchelf --set-rpath \\\$ORIGIN/../bin $<TARGET_FILE:kalgebra>")
+    execute_patchelf("patchelf --set-rpath \\\$ORIGIN/../${LIB_DIR} ${CMAKE_INSTALL_PREFIX}/${BIN_DIR}/kalgebra")
 ]])

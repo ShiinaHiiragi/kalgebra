@@ -12,6 +12,7 @@
 2. Verify viability:
 
     ```shell
+    readelf -d /tmp/kalgebra/bin/kalgebra /tmp/kalgebra/lib | grep RUNPATH
     LD_LIBRARY_PATH=~/aqt/6.5.0/gcc_64/lib /tmp/kalgebra/bin/kalgebra
     ```
 
