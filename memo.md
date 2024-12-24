@@ -15,8 +15,8 @@
 3. Verify viability:
 
     ```shell
-    readelf -d /tmp/kalgebra/bin/kalgebra /tmp/kalgebra/lib/* | grep RUNPATH
-    LD_LIBRARY_PATH=~/aqt/6.5.0/gcc_64/lib /tmp/kalgebra/bin/kalgebra
+    readelf -d /tmp/kalgebra-kai/app/bin/kalgebra /tmp/kalgebra-kai/app/lib/* | grep RUNPATH
+    LD_LIBRARY_PATH=~/aqt/6.5.0/gcc_64/lib /tmp/kalgebra-kai/app/bin/kalgebra
     ```
 
 4. Packaging:
