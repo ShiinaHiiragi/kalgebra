@@ -97,6 +97,23 @@ HttpResponse status_func3d(const HttpRequest &request) {
     }
 }
 
+HttpResponse operate_tab(const HttpRequest &request) {
+    assert(global_app != nullptr);
+    std::string query = request.content();
+    std::cout << "POST /tab with " << query << "\n";
+
+    try {
+        HttpResponse response(HttpStatusCode::Ok);
+        response.SetHeader("Content-Type", "application/json");
+        global_app->operate_tab(std::stoi(query));
+        response.SetContent("");
+        return response;
+    } catch (...) {
+        HttpResponse response(HttpStatusCode::BadRequest);
+        return response;
+    }
+}
+
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     KLocalizedString::setApplicationDomain("kalgebra");
@@ -122,8 +139,12 @@ int main(int argc, char *argv[]) {
     widget.show();
     global_app = &widget;
 
+    int port = 8000;
+    if (argc > 1) {
+        port = std::stoi(argv[1]);
+    }
+
     std::string host = "0.0.0.0";
-    int port = 8080;
     HttpServer server(host, port);
 
     server.RegisterHttpRequestHandler("/version", HttpMethod::HEAD, status_version);
@@ -137,6 +158,9 @@ int main(int argc, char *argv[]) {
 
     server.RegisterHttpRequestHandler("/func/3d", HttpMethod::HEAD, status_func3d);
     server.RegisterHttpRequestHandler("/func/3d", HttpMethod::POST, status_func3d);
+
+    server.RegisterHttpRequestHandler("/tab", HttpMethod::HEAD, operate_tab);
+    server.RegisterHttpRequestHandler("/tab", HttpMethod::POST, operate_tab);
     server.Start();
 
     std::cout << "Server listening on " << host << ":" << port << std::endl;

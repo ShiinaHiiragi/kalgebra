@@ -395,7 +395,7 @@ KAlgebra::KAlgebra(QWidget *parent)
     KHelpMenu *help = new KHelpMenu(this);
     menuBar()->addMenu(help->menu());
 
-#pragma message("TODO: Port to PlotsModel")
+    // #pragma message("TODO: Port to PlotsModel")
     //     connect(b_funcsModel, SIGNAL(functionModified(QString,Analitza::Expression)),
     //             c_results, SLOT(modifyVariable(QString,Analitza::Expression)));
     //     connect(b_funcsModel, SIGNAL(functionRemoved(QString)),
@@ -499,6 +499,12 @@ std::string KAlgebra::status_func3d(std::vector<std::vector<double>> ind_vars) {
         result[pair_lit] = json(anly.calculate().toString().toDouble()).dump();
     }
     return result.dump();
+}
+
+void KAlgebra::operate_tab(int tab_index) {
+    if (tab_index >= 0 && tab_index < 4) {
+        m_tabs->setCurrentIndex(tab_index);
+    }
 }
 
 void KAlgebra::new_func() {

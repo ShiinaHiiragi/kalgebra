@@ -58,6 +58,8 @@ public:
     std::string status_func3d(std::vector<std::vector<double>>);
     std::string expr_3d;
 
+    void operate_tab(int);
+
 private:
     QLabel *m_status;
     QTabWidget *m_tabs;
