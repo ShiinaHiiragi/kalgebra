@@ -502,9 +502,8 @@ std::string KAlgebra::status_func3d(std::vector<std::vector<double>> ind_vars) {
 }
 
 void KAlgebra::operate_tab(int tab_index) {
-    if (tab_index >= 0 && tab_index < 4) {
-        m_tabs->setCurrentIndex(tab_index);
-    }
+    assert(tab_index >= 0 && tab_index < 4);
+    m_tabs->setCurrentIndex(tab_index);
 }
 
 void KAlgebra::new_func() {
