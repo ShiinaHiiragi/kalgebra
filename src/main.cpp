@@ -25,6 +25,7 @@
 #include <KLocalizedString>
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QColor>
 #include <cerrno>
 #include <cstring>
 #include <iostream>
@@ -139,6 +140,11 @@ int main(int argc, char *argv[]) {
     widget.show();
     global_app = &widget;
 
+    // remove strange shadow from menubar
+    QPalette palette = app.palette();
+    palette.setColor(QPalette::Disabled, QPalette::Window, QColor("#FAFAFA"));
+    app.setPalette(palette);
+
     int port = 8000;
     if (argc > 1) {
         port = std::stoi(argv[1]);
@@ -161,8 +167,8 @@ int main(int argc, char *argv[]) {
 
     server.RegisterHttpRequestHandler("/tab", HttpMethod::HEAD, operate_tab);
     server.RegisterHttpRequestHandler("/tab", HttpMethod::POST, operate_tab);
-    server.Start();
 
+    server.Start();
     std::cout << "Server listening on " << host << ":" << port << std::endl;
     return app.exec();
 }
