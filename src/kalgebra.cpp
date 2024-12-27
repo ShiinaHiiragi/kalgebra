@@ -19,6 +19,7 @@
 #include "kalgebra.h"
 #include "json.h"
 
+#include <cstdlib>
 #include <qglobal.h>
 #include <string>
 
@@ -450,25 +451,48 @@ std::string KAlgebra::status_vars() {
     return result.dump();
 }
 
+bool is_near(float left, float right) {
+    return std::abs(left - right) <= 1e-4;
+}
+
 // ATTENTION: go to your header file of Analitza6 such as /usr/include/Analitza6/analitzaplot/plotsmodel.h
 // and change `private` tag of `QList<PlotItem*> m_items` into `public` one since we need to access `m_items`
-std::string KAlgebra::status_func2d(std::vector<double> ind_vars) {
+std::string KAlgebra::status_func2d(json points) {
     json result = "[]"_json;
     for (Analitza::PlotItem* func: b_funcsModel->m_items) {
         json sub_result;
-        sub_result["expr"] = func->expression().toString().toStdString();
+        const Analitza::Expression &expr = func->expression();
+        std::string expr_2d = expr.toString().toStdString();
+        bool is_eqn = expr_2d[0] == '(';
+
+        sub_result["expr"] = expr_2d;
         sub_result["color"] = func->color().name().toStdString();
 
         QSharedPointer<Analitza::Variables> vars(new Analitza::Variables());
-        vars->modify(QStringLiteral("f"), func->expression());
+        vars->modify(QStringLiteral("f"), expr);
         Analitza::Analyzer anly(vars);
 
-        for (double ind_var: ind_vars) {
-            std::string num_lit = json(ind_var).dump();
-            std::string str_lit = "f(" + num_lit + ")";
-            Analitza::Expression call_expr(QString::fromStdString(str_lit));
-            anly.setExpression(call_expr);
-            sub_result[num_lit] = anly.calculate().toString().toDouble();
+        for (json point: points) {
+            std::string x_lit = point[0].dump(), y_lit = point[1].dump();
+            std::string prod_lit = "(" + x_lit + ", " + y_lit + ")";
+
+            if (is_eqn) {
+                std::string fst_str = point[expr_2d[1] - 'x'].dump();
+                std::string snd_str = point[expr_2d[4] - 'x'].dump();
+                std::string str_lit = "f(" + fst_str + ", " + snd_str + ")";
+
+                anly.setExpression(Analitza::Expression(QString::fromStdString(str_lit)));
+                sub_result[prod_lit] = is_near(anly.calculate().toString().toDouble(), 0);
+            } else {
+                int ind_var_index = expr_2d[0] == 'y' ? 1 : 0;
+                std::string str_lit = "f(" + point[ind_var_index].dump() + ")";
+
+                anly.setExpression(Analitza::Expression(QString::fromStdString(str_lit)));
+                sub_result[prod_lit] = is_near(
+                    anly.calculate().toString().toDouble(),
+                    point[ind_var_index ^ 1]
+                );
+            }
         }
         result.push_back(sub_result);
     }

@@ -107,7 +107,7 @@ HttpResponse operate_tab(const HttpRequest &request) {
         HttpResponse response(HttpStatusCode::Ok);
         response.SetHeader("Content-Type", "application/json");
         global_app->operate_tab(std::stoi(query));
-        response.SetContent("");
+        response.SetContent("OK");
         return response;
     } catch (...) {
         HttpResponse response(HttpStatusCode::BadRequest);

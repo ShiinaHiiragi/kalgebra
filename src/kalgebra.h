@@ -28,6 +28,9 @@
 #include <QTabWidget>
 #include <QTreeView>
 
+#include "json.h"
+using json = nlohmann::json;
+
 namespace Analitza {
 class PlotsView2D;
 class PlotsView3DES;
@@ -54,7 +57,7 @@ public:
     void add3D(const Analitza::Expression &exp);
 
     std::string status_vars();
-    std::string status_func2d(std::vector<double>);
+    std::string status_func2d(json);
     std::string status_func3d(std::vector<std::vector<double>>);
     std::string expr_3d;
 
