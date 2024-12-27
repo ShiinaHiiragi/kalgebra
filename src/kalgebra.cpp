@@ -513,8 +513,10 @@ std::string KAlgebra::status_func3d(json points) {
     for (json point: points) {
         using vars = std::map<char, json>;
         vars ind_vars = {{'x', point[0]}, {'y', point[1]}, {'z', point[2]}};
-        std::string x = ind_vars['x'].dump(), y = ind_vars['y'].dump(), z = ind_vars['z'].dump();
-        std::string prod_lit = "(" + x + ", " + y + ", " + z + ")";
+        std::string x_lit = ind_vars['x'].dump();
+        std::string y_lit = ind_vars['y'].dump();
+        std::string z_lit = ind_vars['z'].dump();
+        std::string prod_lit = "(" + x_lit + ", " + y_lit + ", " + z_lit + ")";
 
         if (is_eqn) {
             std::string fst_str = point[expr_3d[1] - 'x'].dump();
