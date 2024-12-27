@@ -1,4 +1,4 @@
-# Memo
+# Manual
 
 ## Build
 1. Configure CMake
@@ -8,6 +8,7 @@
     ```shell
     mv ~/kde/usr/lib/x86_64-linux-gnu/_libwayland-client.so.0 ~/kde/usr/lib/x86_64-linux-gnu/libwayland-client.so.0
     cmake --build ~/kde/build/kalgebra --config Debug --target all -j 16
+    rm -rf /tmp/kalgebra-kai
     mv ~/kde/usr/lib/x86_64-linux-gnu/libwayland-client.so.0 ~/kde/usr/lib/x86_64-linux-gnu/_libwayland-client.so.0
     cmake --build ~/kde/build/kalgebra --config Debug --target install -j 16
     ```
