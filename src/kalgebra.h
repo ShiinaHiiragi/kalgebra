@@ -58,7 +58,7 @@ public:
 
     std::string status_vars();
     std::string status_func2d(json);
-    std::string status_func3d(std::vector<std::vector<double>>);
+    std::string status_func3d(json);
     std::string expr_3d;
 
     void operate_tab(int);

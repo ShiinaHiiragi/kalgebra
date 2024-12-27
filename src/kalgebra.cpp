@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <qglobal.h>
 #include <string>
+#include <map>
 
 #include <analitza/value.h>
 #include <analitza/variables.h>
@@ -468,9 +469,9 @@ std::string KAlgebra::status_func2d(json points) {
         sub_result["expr"] = expr_2d;
         sub_result["color"] = func->color().name().toStdString();
 
-        QSharedPointer<Analitza::Variables> vars(new Analitza::Variables());
-        vars->modify(QStringLiteral("f"), expr);
-        Analitza::Analyzer anly(vars);
+        Analitza::Variables vars;
+        vars.modify(QStringLiteral("f"), expr);
+        Analitza::Analyzer anly(&vars);
 
         for (json point: points) {
             std::string x_lit = point[0].dump(), y_lit = point[1].dump();
@@ -499,28 +500,47 @@ std::string KAlgebra::status_func2d(json points) {
     return result.dump();
 }
 
-std::string KAlgebra::status_func3d(std::vector<std::vector<double>> ind_vars) {
+std::string KAlgebra::status_func3d(json points) {
     json result = "{}"_json;
+    bool is_eqn = expr_3d.find("->") >= 7;
+    const Analitza::Expression expr(QString::fromStdString(expr_3d));
     result["expr"] = expr_3d;
 
-    Analitza::Expression eq_3d(QString::fromStdString(expr_3d));
     Analitza::Variables vars;
-    vars.modify(QStringLiteral("f"), eq_3d.equationToFunction());
+    vars.modify(QStringLiteral("f"), expr);
     Analitza::Analyzer anly(&vars);
 
-    for (std::vector<double> ind_var: ind_vars) {
-        assert(ind_var.size() == 3);
-        std::string pair_lit = "("
-            + json(ind_var[expr_3d[1] - 'x']).dump()
-            + ", "
-            + json(ind_var[expr_3d[4] - 'x']).dump()
-            + ", "
-            + json(ind_var[expr_3d[7] - 'x']).dump()
-            + ")";
+    for (json point: points) {
+        using vars = std::map<char, json>;
+        vars ind_vars = {{'x', point[0]}, {'y', point[1]}, {'z', point[2]}};
+        std::string x = ind_vars['x'].dump(), y = ind_vars['y'].dump(), z = ind_vars['z'].dump();
+        std::string prod_lit = "(" + x + ", " + y + ", " + z + ")";
 
-        Analitza::Expression call_expr(QString::fromStdString("f" + pair_lit));
-        anly.setExpression(call_expr);
-        result[pair_lit] = json(anly.calculate().toString().toDouble()).dump();
+        if (is_eqn) {
+            std::string fst_str = point[expr_3d[1] - 'x'].dump();
+            std::string snd_str = point[expr_3d[4] - 'x'].dump();
+            std::string trd_str = point[expr_3d[7] - 'x'].dump();
+            std::string str_lit = "f(" + fst_str + ", " + snd_str + ", " + trd_str + ")";
+
+            anly.setExpression(Analitza::Expression(QString::fromStdString(str_lit)));
+            result[prod_lit] = is_near(anly.calculate().toString().toDouble(), 0);
+        } else {
+            auto pop = [](vars &hash, char key) -> std::string {
+                json result = hash[key];
+                hash.erase(key);
+                return result.dump();
+            };
+
+            std::string fst_str = pop(ind_vars, expr_3d[1]);
+            std::string snd_str = pop(ind_vars, expr_3d[4]);
+            std::string str_lit = "f(" + fst_str + ", " + snd_str + ")";
+
+            anly.setExpression(Analitza::Expression(QString::fromStdString(str_lit)));
+            result[prod_lit] = is_near(
+                anly.calculate().toString().toDouble(),
+                (*(ind_vars.begin())).second
+            );
+        }
     }
     return result.dump();
 }
