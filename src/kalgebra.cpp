@@ -502,11 +502,15 @@ std::string KAlgebra::status_func2d(json points) {
 
 std::string KAlgebra::status_func3d(json points) {
     json result = "{}"_json;
-    bool is_eqn = expr_3d.find("->") >= 7;
-    const Analitza::Expression expr(QString::fromStdString(expr_3d));
     result["expr"] = expr_3d;
+    if (!expr_3d.size()) {
+        return result.dump();
+    }
 
+    bool is_eqn = expr_3d.find("->") >= 7;
     Analitza::Variables vars;
+    const Analitza::Expression expr(QString::fromStdString(expr_3d));
+
     vars.modify(QStringLiteral("f"), expr);
     Analitza::Analyzer anly(&vars);
 
