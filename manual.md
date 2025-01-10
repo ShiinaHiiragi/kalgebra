@@ -1,7 +1,7 @@
 # Manual
 
 ## Build
-1. Change version macro
+1. Change version in `src/main.cpp` and `src/control`
 
 2. Configure CMake
 
