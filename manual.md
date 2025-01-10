@@ -1,9 +1,11 @@
 # Manual
 
 ## Build
-1. Configure CMake
+1. Change version macro
 
-2. Build & install:
+2. Configure CMake
+
+3. Build & install:
 
     ```shell
     mv ~/kde/usr/lib/x86_64-linux-gnu/_libwayland-client.so.0 ~/kde/usr/lib/x86_64-linux-gnu/libwayland-client.so.0
@@ -13,14 +15,14 @@
     cmake --build ~/kde/build/kalgebra --config Debug --target install -j 16
     ```
 
-3. Verify viability:
+4. Verify viability:
 
     ```shell
     readelf -d /tmp/kalgebra-kai/app/bin/kalgebra /tmp/kalgebra-kai/app/lib/* | grep RUNPATH
     LD_LIBRARY_PATH=~/aqt/6.5.0/gcc_64/lib /tmp/kalgebra-kai/app/bin/kalgebra
     ```
 
-4. Packaging:
+5. Packaging:
 
     ```shell
     mkdir /tmp/kalgebra-kai/DEBIAN

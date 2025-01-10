@@ -16,7 +16,7 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA   *
  *************************************************************************************/
 
-#define SERVER_VERSION "0.2"
+#define SERVER_VERSION "0.3"
 
 #include <sys/resource.h>
 #include <sys/time.h>
