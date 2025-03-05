@@ -19,7 +19,7 @@
 
     ```shell
     readelf -d /tmp/kalgebra-kai/app/bin/kalgebra /tmp/kalgebra-kai/app/lib/* | grep RUNPATH
-    LD_LIBRARY_PATH=~/aqt/6.5.0/gcc_64/lib /tmp/kalgebra-kai/app/bin/kalgebra
+    LD_LIBRARY_PATH=~/6.5.0/gcc_64/lib /tmp/kalgebra-kai/app/bin/kalgebra
     ```
 
 5. Packaging:
