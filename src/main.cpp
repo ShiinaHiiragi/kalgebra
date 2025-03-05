@@ -134,6 +134,24 @@ HttpResponse operate_add2d(const HttpRequest &request) {
     return response;
 }
 
+HttpResponse operate_add3d(const HttpRequest &request) {
+    assert(global_app != nullptr);
+    std::string query = request.content();
+    std::cout << "POST /add/2d" << "\n";
+
+    QMetaObject::invokeMethod(
+        global_app,
+        "operate_add3d",
+        Qt::QueuedConnection,
+        Q_ARG(std::string, query)
+    );
+
+    HttpResponse response(HttpStatusCode::Ok);
+    response.SetHeader("Content-Type", "application/json");
+    response.SetContent("OK");
+    return response;
+}
+
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     KLocalizedString::setApplicationDomain("kalgebra");
@@ -189,6 +207,9 @@ int main(int argc, char *argv[]) {
 
     server.RegisterHttpRequestHandler("/add/2d", HttpMethod::HEAD, operate_add2d);
     server.RegisterHttpRequestHandler("/add/2d", HttpMethod::POST, operate_add2d);
+
+    server.RegisterHttpRequestHandler("/add/3d", HttpMethod::HEAD, operate_add3d);
+    server.RegisterHttpRequestHandler("/add/3d", HttpMethod::POST, operate_add3d);
 
     server.Start();
     std::cout << "Server listening on " << host << ":" << port << std::endl;

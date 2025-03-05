@@ -66,6 +66,7 @@ public:
 
 public Q_SLOTS:
     void operate_add2d(std::string);
+    void operate_add3d(std::string);
 
 private:
     QLabel *m_status;

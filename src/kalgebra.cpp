@@ -561,6 +561,11 @@ void KAlgebra::operate_add2d(std::string expr) {
     b_funced->ok();
 }
 
+void KAlgebra::operate_add3d(std::string expr) {
+    t_exp->setText(QString::fromStdString(expr));
+    new_func3d();
+}
+
 void KAlgebra::new_func() {
     Analitza::FunctionGraph *f = b_funced->createFunction();
 
