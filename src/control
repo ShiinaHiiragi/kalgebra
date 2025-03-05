@@ -1,5 +1,5 @@
 Package: kalgebra-kai
-Version: 0.3
+Version: 1.0
 Maintainer: Ichinoe
 Architecture: amd64
 Description: Modified KAlgebra which supports local server.
