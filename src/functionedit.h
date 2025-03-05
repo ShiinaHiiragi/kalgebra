@@ -99,6 +99,7 @@ public:
 public Q_SLOTS:
     /** Clears the dialog. */
     void clear();
+    void ok();
 
 Q_SIGNALS:
     /** Tells that the result has been accepted. */
@@ -109,7 +110,6 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void edit();
-    void ok();
     void colorChange(int);
     void updateUplimit();
     void updateDownlimit();

@@ -556,6 +556,11 @@ void KAlgebra::operate_tab(int tab_index) {
     m_tabs->setCurrentIndex(tab_index);
 }
 
+void KAlgebra::operate_add2d(std::string expr) {
+    b_funced->setFunction(QString::fromStdString(expr));
+    b_funced->ok();
+}
+
 void KAlgebra::new_func() {
     Analitza::FunctionGraph *f = b_funced->createFunction();
 

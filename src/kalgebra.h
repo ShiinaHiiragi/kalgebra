@@ -27,6 +27,7 @@
 #include <QPushButton>
 #include <QTabWidget>
 #include <QTreeView>
+#include <qtmetamacros.h>
 
 #include "json.h"
 using json = nlohmann::json;
@@ -62,6 +63,9 @@ public:
     std::string expr_3d;
 
     void operate_tab(int);
+
+public Q_SLOTS:
+    void operate_add2d(std::string);
 
 private:
     QLabel *m_status;
