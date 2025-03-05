@@ -36,6 +36,7 @@
 #include <analitzaplot/plotsfactory.h>
 #include <analitzaplot/plotitem.h>
 #include <analitzaplot/plotsmodel.h>
+#include <analitzaplot/plottingenums.h>
 
 #include <KConfig>
 #include <KConfigGroup>
@@ -459,7 +460,10 @@ bool is_near(float left, float right) {
 // ATTENTION: go to your header file of Analitza6 such as /usr/include/Analitza6/analitzaplot/plotsmodel.h
 // and change `private` tag of `QList<PlotItem*> m_items` into `public` one since we need to access `m_items`
 std::string KAlgebra::status_func2d(json points) {
-    json result = "[]"_json;
+    json result = "{}"_json;
+    result["resolution"] = b_funcsModel->m_resolution;
+    result["plots"] = "[]"_json;
+
     for (Analitza::PlotItem* func: b_funcsModel->m_items) {
         json sub_result;
         const Analitza::Expression &expr = func->expression();
@@ -495,7 +499,7 @@ std::string KAlgebra::status_func2d(json points) {
                 );
             }
         }
-        result.push_back(sub_result);
+        result["plots"].push_back(sub_result);
     }
     return result.dump();
 }
@@ -503,6 +507,7 @@ std::string KAlgebra::status_func2d(json points) {
 std::string KAlgebra::status_func3d(json points) {
     json result = "{}"_json;
     result["expr"] = expr_3d;
+    result["style"] = m_graph3d->plotStyle();
     if (!expr_3d.size()) {
         return result.dump();
     }
