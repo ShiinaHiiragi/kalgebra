@@ -472,6 +472,10 @@ std::string KAlgebra::status_func2d(json points) {
         sub_result["res"] = b_funcsModel->m_resolution;
 
         Analitza::Variables vars;
+        QSharedPointer<Analitza::Variables> vs = c_varsModel->variables();
+        for (int idx = 0; idx < vs->keys().length(); idx += 1) {
+            vars.modify(vs->keys()[idx], vs->value(vs->keys()[idx]));
+        }
         vars.modify(QStringLiteral("f"), expr);
         Analitza::Analyzer anly(&vars);
 
