@@ -460,10 +460,7 @@ bool is_near(float left, float right) {
 // ATTENTION: go to your header file of Analitza6 such as /usr/include/Analitza6/analitzaplot/plotsmodel.h
 // and change `private` tag of `QList<PlotItem*> m_items` into `public` one since we need to access `m_items`
 std::string KAlgebra::status_func2d(json points) {
-    json result = "{}"_json;
-    result["resolution"] = b_funcsModel->m_resolution;
-    result["plots"] = "[]"_json;
-
+    json result = "[]"_json;
     for (Analitza::PlotItem* func: b_funcsModel->m_items) {
         json sub_result;
         const Analitza::Expression &expr = func->expression();
@@ -472,6 +469,7 @@ std::string KAlgebra::status_func2d(json points) {
 
         sub_result["expr"] = expr_2d;
         sub_result["color"] = func->color().name().toStdString();
+        sub_result["res"] = b_funcsModel->m_resolution;
 
         Analitza::Variables vars;
         vars.modify(QStringLiteral("f"), expr);
@@ -499,7 +497,7 @@ std::string KAlgebra::status_func2d(json points) {
                 );
             }
         }
-        result["plots"].push_back(sub_result);
+        result.push_back(sub_result);
     }
     return result.dump();
 }
