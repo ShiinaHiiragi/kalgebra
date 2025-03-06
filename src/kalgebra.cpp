@@ -19,8 +19,12 @@
 #include "kalgebra.h"
 #include "json.h"
 
+#include <analitza/expression.h>
 #include <cstdlib>
+#include <qdebug.h>
 #include <qglobal.h>
+#include <qobject.h>
+#include <qstringliteral.h>
 #include <string>
 #include <map>
 
@@ -476,7 +480,19 @@ std::string KAlgebra::status_func2d(json points) {
         for (int idx = 0; idx < vs->keys().length(); idx += 1) {
             vars.modify(vs->keys()[idx], vs->value(vs->keys()[idx]));
         }
-        vars.modify(QStringLiteral("f"), expr);
+        if (expr.toString().startsWith(QStringLiteral("diff"))) {
+            int idx = expr.toString().indexOf(QChar::fromLatin1(':'));
+            QString var = expr.toString()[idx + 1];
+            QString new_str = var
+                + QStringLiteral("->(")
+                + expr.toString()
+                + QStringLiteral(")")
+                + var;
+            Analitza::Expression new_expr(new_str);
+            vars.modify(QStringLiteral("f"), new_expr);
+        } else {
+            vars.modify(QStringLiteral("f"), expr);
+        }
         Analitza::Analyzer anly(&vars);
 
         for (json point: points) {
