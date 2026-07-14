@@ -5,12 +5,19 @@
 
 2. Configure CMake
 
+    ```shell
+    cmake -S ~/Downloads/kalgebra -B ~/kde/build/kalgebra -G Ninja \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_PREFIX_PATH="/home/ichinoe/kde/usr;/home/ichinoe/6.5.0/gcc_64" \
+      -DCMAKE_INSTALL_PREFIX=/tmp/kalgebra-kai/app
+    ```
+
 3. Build & install:
 
     ```shell
     cmake --build ~/kde/build/kalgebra --config Debug --target all -j 16
     rm -rf /tmp/kalgebra-kai
-    DESTDIR=/tmp/kalgebra-kai cmake --build ~/kde/build/kalgebra --config Debug --target install -j 16
+    cmake --build ~/kde/build/kalgebra --config Debug --target install -j 16
     ```
 
 4. Verify viability:
