@@ -20,6 +20,8 @@
     cmake --build ~/kde/build/kalgebra --config Debug --target install -j 16
     ```
 
+    use cmake >= 4.4 to avoid the problem of libwayland duplication
+
 4. Verify viability:
 
     ```shell
