@@ -234,5 +234,7 @@ int main(int argc, char *argv[]) {
 
     server.Start();
     std::cout << "Server listening on " << host << ":" << port << std::endl;
-    return app.exec();
+    int ret = app.exec();
+    server.Stop();
+    return ret;
 }
