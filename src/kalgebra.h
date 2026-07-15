@@ -65,6 +65,7 @@ public:
     void operate_tab(int);
 
 public Q_SLOTS:
+    void operate_calc(std::string);
     void operate_add2d(std::string);
     void operate_add3d(std::string);
 

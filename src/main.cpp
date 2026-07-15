@@ -116,6 +116,24 @@ HttpResponse operate_tab(const HttpRequest &request) {
     }
 }
 
+HttpResponse operate_calc(const HttpRequest &request) {
+    assert(global_app != nullptr);
+    std::string query = request.content();
+    std::cout << "POST /add/calc" << "\n";
+
+    QMetaObject::invokeMethod(
+        global_app,
+        "operate_calc",
+        Qt::QueuedConnection,
+        Q_ARG(std::string, query)
+    );
+
+    HttpResponse response(HttpStatusCode::Ok);
+    response.SetHeader("Content-Type", "application/json");
+    response.SetContent("OK");
+    return response;
+}
+
 HttpResponse operate_add2d(const HttpRequest &request) {
     assert(global_app != nullptr);
     std::string query = request.content();
@@ -204,6 +222,9 @@ int main(int argc, char *argv[]) {
 
     server.RegisterHttpRequestHandler("/tab", HttpMethod::HEAD, operate_tab);
     server.RegisterHttpRequestHandler("/tab", HttpMethod::POST, operate_tab);
+
+    server.RegisterHttpRequestHandler("/add/calc", HttpMethod::HEAD, operate_calc);
+    server.RegisterHttpRequestHandler("/add/calc", HttpMethod::POST, operate_calc);
 
     server.RegisterHttpRequestHandler("/add/2d", HttpMethod::HEAD, operate_add2d);
     server.RegisterHttpRequestHandler("/add/2d", HttpMethod::POST, operate_add2d);

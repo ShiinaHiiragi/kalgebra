@@ -579,6 +579,11 @@ void KAlgebra::operate_tab(int tab_index) {
     m_tabs->setCurrentIndex(tab_index);
 }
 
+void KAlgebra::operate_calc(std::string expr) {
+    QString input = QString::fromStdString(expr);
+    c_results->addOperation(Analitza::Expression(input, false), input);
+}
+
 void KAlgebra::operate_add2d(std::string expr) {
     b_funced->setFunction(QString::fromStdString(expr));
     b_funced->ok();
