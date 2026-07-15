@@ -17,7 +17,7 @@
  *************************************************************************************/
 
 #include <qobjectdefs.h>
-#define SERVER_VERSION "1.0"
+#define SERVER_VERSION "1.1"
 
 #include <sys/resource.h>
 #include <sys/time.h>
