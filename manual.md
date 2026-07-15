@@ -7,9 +7,11 @@
 
     ```shell
     cmake -S ~/Downloads/kalgebra -B ~/kde/build/kalgebra -G Ninja \
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
       -DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_PREFIX_PATH="/home/ichinoe/kde/usr;/home/ichinoe/6.5.0/gcc_64" \
       -DCMAKE_INSTALL_PREFIX=/tmp/kalgebra-kai/app
+    ln -sf ~/kde/build/kalgebra/compile_commands.json ~/Downloads/kalgebra/compile_commands.json
     ```
 
 3. Build & install:
